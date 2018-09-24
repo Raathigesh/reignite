@@ -9,29 +9,45 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 export class Compiler {
   private compiler: webpack.Compiler;
 
-  constructor(expressApp: any) {
+  constructor(expressApp: any, projectRoot: string) {
     this.compiler = webpack({
-      entry: "D:\\projects\\playground\\index.js",
+      entry: [
+        path.join(projectRoot, "index.jsx"),
+        "webpack-hot-middleware/client"
+      ],
       mode: "development",
+      module: {
+        rules: [
+          {
+            test: /\.(js|jsx|ts|tsx)$/,
+            exclude: /(node_modules)/,
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-react", "@babel/preset-env"]
+            }
+          }
+        ]
+      },
       plugins: [
         new HtmlWebpackPlugin({
           title: "Config Pack",
           template: require("html-webpack-template"),
           appMountId: "root"
         }),
-        new PackageInstallPlugin(
-          new PackageInstaller("D:\\projects\\playground\\")
-        ),
+        new PackageInstallPlugin(new PackageInstaller(projectRoot)),
         new WatchMissingNodeModulesPlugin(
-          path.join("D:\\projects\\playground\\", "node_modules")
-        )
+          path.join(projectRoot, "node_modules")
+        ),
+        new webpack.HotModuleReplacementPlugin()
       ]
     });
 
     expressApp.use(
       middleware(this.compiler, {
-        publicPath: "/app"
+        publicPath: "/"
       })
     );
+
+    expressApp.use(require("webpack-hot-middleware")(this.compiler));
   }
 }
