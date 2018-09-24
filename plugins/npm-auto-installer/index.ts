@@ -1,7 +1,7 @@
 // Most of the code is shamlessly copied from github.com/k15a/playgrounds/blob/master/packages/playgrounds-server/
 // Thank you k15a for your work
 
-https: class PackageInstallPlugin {
+class PackageInstallPlugin {
   public compiler: any;
   public resolving: any;
   public installer: any;
