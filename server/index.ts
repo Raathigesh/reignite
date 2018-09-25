@@ -6,6 +6,7 @@ import { getSyledDeclarations, updateCSSVariable } from "./services/css-in-js";
 const typeDefs = `
   type Query {
     cssDeclarations(filePath: String): [CSSProperty]!
+    fileSelection(filePath: String): String!
   }
   type Mutation {
     updateCSSVariable(filePath: String, propertyName: String, propertyValue: String): String
@@ -21,7 +22,9 @@ const typeDefs = `
 const resolvers = {
   Query: {
     cssDeclarations: async (_: any, { filePath }: any) =>
-      await getSyledDeclarations(filePath)
+      await getSyledDeclarations(filePath),
+    fileSelection: (_: any, { filePath }: any) =>
+      console.log(filePath) || "Got it"
   },
   Mutation: {
     updateCSSVariable: async (

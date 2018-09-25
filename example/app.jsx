@@ -1,9 +1,11 @@
 import React from "react";
 import styled from "react-emotion";
 const HelloDiv = styled("div")({
-  backgroundColor: "#544793"
+  backgroundColor: "#f5a623"
 });
 
-const App = () => <HelloDiv>Hello</HelloDiv>;
+const App = function Home() {
+  return <HelloDiv>Hello</HelloDiv>;
+};
 
 export default App;

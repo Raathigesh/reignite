@@ -4,6 +4,7 @@ import * as path from "path";
 import WatchMissingNodeModulesPlugin from "../plugins/npm-auto-installer/missing-module";
 import PackageInstaller from "../plugins/npm-auto-installer/installer";
 import PackageInstallPlugin from "../plugins/npm-auto-installer";
+import ReactComponentHighlighter from "../plugins/react-component-highlighter";
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 export class Compiler {
@@ -38,7 +39,8 @@ export class Compiler {
         new WatchMissingNodeModulesPlugin(
           path.join(projectRoot, "node_modules")
         ),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new ReactComponentHighlighter()
       ]
     });
 

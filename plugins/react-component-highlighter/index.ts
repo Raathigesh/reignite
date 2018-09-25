@@ -1,12 +1,17 @@
 // https://github.com/loogle18/xray-react/blob/master/lib/plugins.js
 
 export default class ReactComponentHighlighter {
-  apply(compiler: any) {
-    compiler.hooks.afterOptimizeModules.tap(
+  apply(compiler: any, compilation: any) {
+    compiler.hooks.compilation.tap(
       "ReactComponentHighlighter",
-      (modules: any) => {
-        for (let { resource } of modules) {
-        }
+      (compilation: any) => {
+        compilation.hooks.afterOptimizeModules.tap(
+          "ReactComponentHighlighter",
+          (modules: any) => {
+            for (let { resource } of modules) {
+            }
+          }
+        );
       }
     );
   }
