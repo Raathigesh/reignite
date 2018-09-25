@@ -3,21 +3,8 @@ import styled from "react-emotion";
 import Draggable from "react-draggable";
 import gql from "graphql-tag";
 import { graphql, Mutation } from "react-apollo";
+import CHANGE_COLOR from "./update-css-variable.gql";
 import { ChromePicker } from "react-color";
-
-const CHANGE_COLOR = gql`
-  mutation UpdateCSSVariable(
-    $filePath: String!
-    $propertyName: String!
-    $propertyValue: String!
-  ) {
-    updateCSSVariable(
-      filePath: $filePath
-      propertyName: $propertyName
-      propertyValue: $propertyValue
-    )
-  }
-`;
 
 const Container = styled("div")`
   height: 400px;

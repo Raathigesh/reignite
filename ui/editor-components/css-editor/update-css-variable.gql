@@ -1,0 +1,11 @@
+mutation UpdateCSSVariable(
+  $filePath: String!
+  $propertyName: String!
+  $propertyValue: String!
+) {
+  updateCSSVariable(
+    filePath: $filePath
+    propertyName: $propertyName
+    propertyValue: $propertyValue
+  )
+}
