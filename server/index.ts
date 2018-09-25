@@ -11,8 +11,10 @@ const typeDefs = `
     updateCSSVariable(filePath: String, propertyName: String, propertyValue: String): String
   }
   type CSSProperty {
+    styleName: String
     name: String
     value: String
+    fieldType: String
   }
 `;
 
