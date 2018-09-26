@@ -1,15 +1,22 @@
-import React from "react";
+import React, { Component } from "react";
 import styled from "react-emotion";
 import Draggable from "react-draggable";
 import gql from "graphql-tag";
-import { graphql, Mutation } from "react-apollo";
+import { graphql, Mutation, Query } from "react-apollo";
 import { groupBy } from "ramda";
 import CHANGE_COLOR from "./update-css-variable.gql";
+import GET_CSS_PROPERTIES from "./fetch-css-properties.gql";
 import PropertiesPanel from "./properties-panel";
 
 const Container = styled("div")`
-  height: 400px;
+  background-color: #f6f6f6;
+  padding: 10px;
   width: 200px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 99999;
 `;
 
 interface CSSVariable {
@@ -19,64 +26,85 @@ interface CSSVariable {
   fieldType: string;
 }
 
-interface Props {
-  data: {
-    refetch: () => void;
-    loading: boolean;
-    cssDeclarations: CSSVariable[];
+interface Props {}
+
+interface State {
+  path: string | null;
+}
+
+class CSSEditor extends Component<Props, State> {
+  state = {
+    path: null
   };
-}
-
-function CSSEditor({
-  data,
-  data: { loading, refetch, cssDeclarations }
-}: Props) {
-  if (loading) {
-    return <div>Loading</div>;
+  componentDidMount() {
+    window.addEventListener("message", (event: any) => {
+      if (event.data.type === "reignite-preview") {
+        const path = event.data.path.split("#")[0];
+        this.setState({
+          path
+        });
+      }
+    });
   }
 
-  return (
-    <Container>
-      <Mutation mutation={CHANGE_COLOR}>
-        {updateCSSVariable => {
-          const groups = groupBy(
-            (cssVariable: CSSVariable) => cssVariable.styleName
-          )(cssDeclarations);
-
-          return Object.entries(groups).map(([key, value]) => (
-            <div>
-              <div>{key}</div>
-              <PropertiesPanel
-                properties={value}
-                onChange={(name: string, value: any) => {
-                  updateCSSVariable({
-                    variables: {
-                      filePath: "D:\\projects\\reimagine\\example\\app.jsx",
-                      propertyName: "backgroundColor",
-                      propertyValue: value
-                    }
-                  }).then(() => {
-                    refetch();
-                  });
-                }}
-              />
-            </div>
-          ));
-        }}
-      </Mutation>
-    </Container>
-  );
-}
-
-const ITEMS_QUERY = gql`
-  query ItemsQuery {
-    cssDeclarations(filePath: "D://projects//reimagine//example//app.jsx") {
-      styleName
-      name
-      value
-      fieldType
+  render() {
+    if (!this.state.path) {
+      return null;
     }
-  }
-`;
+    return (
+      <Draggable handle=".handle">
+        <Container>
+          <Query
+            query={GET_CSS_PROPERTIES}
+            variables={{ filePath: this.state.path }}
+          >
+            {({ loading, error, data, refetch }) => {
+              if (loading) {
+                return <div>Loading</div>;
+              }
 
-export default graphql(ITEMS_QUERY)(CSSEditor);
+              let cssDeclarations: any = [];
+
+              if (data) {
+                cssDeclarations = data.cssDeclarations;
+              }
+
+              return (
+                <Mutation mutation={CHANGE_COLOR}>
+                  {updateCSSVariable => {
+                    const groups = groupBy(
+                      (cssVariable: CSSVariable) => cssVariable.styleName
+                    )(cssDeclarations);
+
+                    return Object.entries(groups).map(([key, value]) => (
+                      <div>
+                        <div>{key}</div>
+                        <PropertiesPanel
+                          properties={value}
+                          onChange={(name: string, value: any) => {
+                            updateCSSVariable({
+                              variables: {
+                                declarationName: key,
+                                filePath: this.state.path,
+                                propertyName: name,
+                                propertyValue: value
+                              }
+                            }).then(() => {
+                              refetch();
+                            });
+                          }}
+                        />
+                      </div>
+                    ));
+                  }}
+                </Mutation>
+              );
+            }}
+          </Query>
+        </Container>
+      </Draggable>
+    );
+  }
+}
+
+export default CSSEditor;

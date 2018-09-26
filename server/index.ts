@@ -9,7 +9,7 @@ const typeDefs = `
     fileSelection(filePath: String): String!
   }
   type Mutation {
-    updateCSSVariable(filePath: String, propertyName: String, propertyValue: String): String
+    updateCSSVariable(declarationName: String, filePath: String, propertyName: String, propertyValue: String): String
   }
   type CSSProperty {
     styleName: String
@@ -29,8 +29,14 @@ const resolvers = {
   Mutation: {
     updateCSSVariable: async (
       _: any,
-      { filePath, propertyName, propertyValue }: any
-    ) => await updateCSSVariable(filePath, propertyName, propertyValue)
+      { declarationName, filePath, propertyName, propertyValue }: any
+    ) =>
+      await updateCSSVariable(
+        declarationName,
+        filePath,
+        propertyName,
+        propertyValue
+      )
   }
 };
 

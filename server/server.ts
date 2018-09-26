@@ -6,6 +6,8 @@ import PackageInstaller from "../plugins/npm-auto-installer/installer";
 import PackageInstallPlugin from "../plugins/npm-auto-installer";
 import ReactComponentHighlighter from "../plugins/react-component-highlighter";
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const WebpackBar = require("webpackbar");
+var HtmlWebpackIncludeAssetsPlugin = require("html-webpack-include-assets-plugin");
 
 export class Compiler {
   private compiler: webpack.Compiler;
@@ -24,7 +26,8 @@ export class Compiler {
             exclude: /(node_modules)/,
             loader: "babel-loader",
             options: {
-              presets: ["@babel/preset-react", "@babel/preset-env"]
+              presets: ["@babel/preset-react", "@babel/preset-env"],
+              plugins: ["react-hot-loader/babel"]
             }
           }
         ]
@@ -40,7 +43,12 @@ export class Compiler {
           path.join(projectRoot, "node_modules")
         ),
         new webpack.HotModuleReplacementPlugin(),
-        new ReactComponentHighlighter()
+        new ReactComponentHighlighter(),
+        new WebpackBar(),
+        new HtmlWebpackIncludeAssetsPlugin({
+          assets: ["./client-script.js"],
+          append: true
+        })
       ]
     });
 
@@ -49,6 +57,15 @@ export class Compiler {
         publicPath: "/"
       })
     );
+
+    expressApp.use(function(req: any, res: any, next: any) {
+      if (req.originalUrl.includes("client-script.js")) {
+        const filePath = path.join(__dirname, "./client-script.js");
+        res.sendFile(filePath);
+      } else {
+        next();
+      }
+    });
 
     expressApp.use(require("webpack-hot-middleware")(this.compiler));
   }

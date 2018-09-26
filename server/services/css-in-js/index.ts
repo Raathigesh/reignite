@@ -34,6 +34,7 @@ export async function getSyledDeclarations(path: string) {
 }
 
 export async function updateCSSVariable(
+  declarationName: string,
   path: string,
   variableName: string,
   value: string
@@ -47,12 +48,15 @@ export async function updateCSSVariable(
         node.declarations[0].init.callee &&
         node.declarations[0].init.callee.callee.name === "styled"
       ) {
+        const styleName = node.declarations[0].id.name;
         const styleObject = node.declarations[0].init.arguments[0];
-        styleObject.properties.map((property: any) => {
-          if (property.key.name === variableName) {
-            property.value.value = value;
-          }
-        });
+        if (styleName === declarationName) {
+          styleObject.properties.map((property: any) => {
+            if (property.key.name === variableName) {
+              property.value.value = value;
+            }
+          });
+        }
       }
     }
   });

@@ -6,5 +6,3 @@ import App from "./app.jsx";
 
 const HotApp = hot(module)(App);
 ReactDom.render(<HotApp />, document.getElementById("root"));
-
-import "./client-script";

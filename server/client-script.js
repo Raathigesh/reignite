@@ -3,7 +3,10 @@
 function insertCSS() {
   var css = document.createElement("style");
   css.type = "text/css";
-  css.innerHTML = `body {margin: 0} .reignite-highlight {border: 1px solid darkblue;} .wrapper { bottom: 0;
+  css.innerHTML = `body {margin: 0} .reignite-highlight { background-color: rgba(0, 0, 255, 0.25);
+    border: 2px solid blue;
+    cursor: pointer;
+    position: absolute;} .wrapper { bottom: 0;
     font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-style: normal;
     left: 0;
@@ -67,7 +70,7 @@ function getReactNode(elem) {
             fiber,
             name: fiber.type.name
           };
-          console.log({ fiber, name: fiber.type.name });
+          // console.log({ fiber, name: fiber.type.name });
         }
       }
     }
@@ -76,7 +79,7 @@ function getReactNode(elem) {
   return result;
 }
 
-function createElemForComponent(elem, componentName) {
+function createElemForComponent(elem, componentName, fiber) {
   let xrayReactElem = document.createElement("div");
   let boundingClientRect = elem.getBoundingClientRect();
   xrayReactElem.setAttribute("data-xray-react-element-name", componentName);
@@ -89,24 +92,36 @@ function createElemForComponent(elem, componentName) {
     boundingClientRect.bottom - window.scrollY + "px";
   xrayReactElem.style.left = boundingClientRect.left - window.scrollX + "px";
   xrayReactElem.style.zIndex = 999999;
+  xrayReactElem.onclick = function() {
+    console.log("SENDING...");
+    parent.postMessage(
+      {
+        type: "reignite-preview",
+        path: fiber.type.__reactstandin__key
+      },
+      "http://localhost:9000"
+    );
+  };
   return xrayReactElem;
 }
 
 function getAllReactNodes() {
-  insertCSS();
-
   var highlighters = [];
   for (let elem of window.document.body.getElementsByTagName("*")) {
     var reactNode = getReactNode(elem);
     if (reactNode) {
-      var highter = createElemForComponent(elem, reactNode.name);
+      var highter = createElemForComponent(
+        elem,
+        reactNode.name,
+        reactNode.fiber
+      );
       highlighters.push(highter);
     }
   }
 
   let xrayReactElementsWrapper = document.createElement("div");
   xrayReactElementsWrapper.className = "wrapper";
-  console.log("highlighers", highlighters);
+
   for (var x = 0; x < highlighters.length; x++) {
     var item = highlighters[x];
     xrayReactElementsWrapper.append(item);
@@ -123,11 +138,20 @@ fetch("http://localhost:4000/", {
   .then(res => res.json())
   .then(res => console.log(res.data));
 
+function removeAllWrappers() {
+  let wrappers = document.getElementsByClassName("wrapper");
+  for (var i = 0; i < wrappers.length; ++i) {
+    wrappers[i].remove();
+  }
+}
+
 const handleXrayReactToggle = function() {
+  insertCSS();
+  removeAllWrappers();
   let keyMap = { 17: false };
   document.body.addEventListener("keydown", function(event) {
     if (event.keyCode in keyMap) {
-      console.log("jey", event.keyCode);
+      removeAllWrappers();
       keyMap[event.keyCode] = true;
       if (keyMap[17]) {
         getAllReactNodes();
@@ -137,11 +161,7 @@ const handleXrayReactToggle = function() {
   document.body.addEventListener("keyup", function(event) {
     if (event.keyCode in keyMap) {
       keyMap[event.keyCode] = false;
-      let wrappers = document.getElementsByClassName("wrapper");
-
-      for (var i = 0; i < wrappers.length; ++i) {
-        wrappers[i].remove();
-      }
+      removeAllWrappers();
     }
   });
 };

@@ -18,9 +18,11 @@ import CSSEditor from "./editor-components/css-editor";
 const ContainerDiv = styled("div")`
   display: flex;
   flex-direction: row;
+  height: 100vh;
 `;
 
 export default class Container extends Component<{}> {
+  componentDidMount() {}
   render() {
     return (
       <ApolloProvider client={client}>
