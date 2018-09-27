@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "react-emotion";
 import Property from "./property";
+import { findRoots, getDisplayName } from "../../tree-walker";
 
 const Container = styled("div")``;
 

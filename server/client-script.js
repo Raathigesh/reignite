@@ -1,5 +1,118 @@
 // Copied from https://github.com/loogle18/xray-react/blob/master/src/
 
+function isEmpty(node) {
+  return node == null;
+}
+
+function isSimple(node) {
+  return (
+    typeof node === "boolean" ||
+    typeof node === "number" ||
+    typeof node === "string"
+  );
+}
+
+function getChildren(node) {
+  if (node.child) {
+    return getChildrenFromChild(node.child);
+  } else if (node.memoizedProps) {
+    return getChildrenFromProps(node.memoizedProps);
+  } else if (node.props) {
+    return getChildrenFromProps(node.props);
+  }
+  return [];
+}
+
+function getChildrenFromChild(node) {
+  const children = [];
+  while (node) {
+    children.push(node);
+    node = node.sibling;
+  }
+  return children;
+}
+
+function getChildrenFromProps(props) {
+  return Array.isArray(props.children) ? props.children : [props.children];
+}
+
+function getDisplayName(node) {
+  if (!node.type) {
+    return null;
+  }
+  if (typeof node.type === "string") {
+    return node.type;
+  }
+  return node.type.displayName || node.type.name || "[anonymous]";
+}
+
+function getDomNode(node) {
+  const { stateNode } = node;
+  return stateNode && stateNode.tagName ? stateNode : null;
+}
+
+function getInstance(node) {
+  for (const key in node) {
+    if (key.indexOf("__reactInternalInstance") === 0) {
+      return node[key];
+    }
+  }
+}
+
+function getRoot(node) {
+  return (
+    node._reactRootContainer && node._reactRootContainer._internalRoot.current
+  );
+}
+
+function findRoots(node) {
+  const roots = [];
+  const tree = document.createTreeWalker(node);
+
+  while (tree.nextNode()) {
+    const root = getRoot(tree.currentNode);
+    if (root) {
+      roots.push(root);
+    }
+  }
+  return roots;
+}
+
+function walk(root, call) {
+  // Skip empty nodes.
+  if (isEmpty(root)) return;
+
+  // Allow returning false to throw out the inclusive tree.
+  if (call(root) === false) return;
+
+  // Recursively walk children.
+  getChildren(root).forEach(node => {
+    // We add the parent node so we can look up in the tree if need be.
+    if (!isEmpty(node) && typeof node === "object") {
+      //node.parent = root;
+    }
+    walk(node, call);
+  });
+}
+
+function json(node) {
+  // Return empty and simple nodes.
+  if (isEmpty(node) || isSimple(node)) {
+    return node;
+  }
+
+  // Memoized props may also be simple, but we don't return if they're empty.
+  if (isSimple(node.memoizedProps)) {
+    return node.memoizedProps;
+  }
+
+  // In the last case we generate data for the corresponding React node.
+  return {
+    children: getChildren(node).map(json),
+    name: getDisplayName(node)
+  };
+}
+
 function insertCSS() {
   var css = document.createElement("style");
   css.type = "text/css";
@@ -57,7 +170,8 @@ function getReactNode(elem) {
           };
           console.log({
             fiber,
-            name: fiber.constructor.name
+            name: fiber.constructor.name,
+            elem
           });
         }
       } else {
@@ -70,7 +184,7 @@ function getReactNode(elem) {
             fiber,
             name: fiber.type.name
           };
-          // console.log({ fiber, name: fiber.type.name });
+          //   console.log({ fiber, name: fiber.type.name, elem });
         }
       }
     }
@@ -94,6 +208,7 @@ function createElemForComponent(elem, componentName, fiber) {
   xrayReactElem.style.zIndex = 999999;
   xrayReactElem.onclick = function() {
     console.log("SENDING...");
+    findCOmponents();
     parent.postMessage(
       {
         type: "reignite-preview",
@@ -103,6 +218,51 @@ function createElemForComponent(elem, componentName, fiber) {
     );
   };
   return xrayReactElem;
+}
+
+function findCOmponents() {
+  // ['ComponentA', 'ComponentB']
+  const roots = findRoots(window.document.body);
+  const tree = recurse(roots[0]);
+  console.log("tree", tree);
+  parent.postMessage(
+    {
+      type: "reignite-tree",
+      data: tree
+    },
+    "http://localhost:9000"
+  );
+}
+
+function recurse(
+  fiberNode,
+  node = {
+    name: "Root",
+    children: []
+  }
+) {
+  const sibiliing = {
+    name: (fiberNode.type && fiberNode.type.displayName) || "Empty",
+    path: fiberNode.type && fiberNode.type.__reactstandin__key,
+    children: []
+  };
+
+  node.children.push(sibiliing);
+
+  let sinode = fiberNode.sibling;
+  while (sinode) {
+    if (sinode.child) {
+      recurse(sinode.child, node);
+    }
+
+    sinode = sinode.sibling;
+  }
+
+  if (fiberNode.child) {
+    recurse(fiberNode.child, sibiliing);
+  }
+
+  return node;
 }
 
 function getAllReactNodes() {
@@ -151,6 +311,7 @@ const handleXrayReactToggle = function() {
   let keyMap = { 17: false };
   document.body.addEventListener("keydown", function(event) {
     if (event.keyCode in keyMap) {
+      findCOmponents();
       removeAllWrappers();
       keyMap[event.keyCode] = true;
       if (keyMap[17]) {

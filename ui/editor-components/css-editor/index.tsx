@@ -7,6 +7,7 @@ import { groupBy } from "ramda";
 import CHANGE_COLOR from "./update-css-variable.gql";
 import GET_CSS_PROPERTIES from "./fetch-css-properties.gql";
 import PropertiesPanel from "./properties-panel";
+import { findRoots, getDisplayName } from "../../tree-walker";
 
 const Container = styled("div")`
   background-color: #f6f6f6;
@@ -46,6 +47,8 @@ class CSSEditor extends Component<Props, State> {
       }
     });
   }
+
+  componentDidUpdate() {}
 
   render() {
     if (!this.state.path) {

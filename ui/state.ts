@@ -4,11 +4,23 @@ const parser = require("prettier/parser-babylon");
 import { produce } from "immer";
 
 interface State {
-  activeFile: string;
+  data: any;
 }
 
 export default class ConfigState extends Container<State> {
   state = {
-    activeFile: ""
+    data: {}
   };
+
+  constructor() {
+    super();
+
+    window.addEventListener("message", (event: any) => {
+      if (event.data.type === "reignite-tree") {
+        this.setState({
+          data: event.data.data
+        });
+      }
+    });
+  }
 }

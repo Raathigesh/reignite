@@ -6,6 +6,7 @@ import ConfigState from "./state";
 import { Subscribe, Provider } from "unstated";
 import { ApolloProvider } from "react-apollo";
 import { ApolloClient, HttpLink, InMemoryCache } from "apollo-client-preset";
+import { walk, findRoots, getDisplayName } from "./tree-walker";
 
 const httpLink = new HttpLink({ uri: "http://localhost:4000" });
 const client = new ApolloClient({
@@ -14,6 +15,7 @@ const client = new ApolloClient({
 });
 
 import CSSEditor from "./editor-components/css-editor";
+import Tree from "./editor-components/tree";
 
 const ContainerDiv = styled("div")`
   display: flex;
@@ -22,7 +24,8 @@ const ContainerDiv = styled("div")`
 `;
 
 export default class Container extends Component<{}> {
-  componentDidMount() {}
+  public ele: any;
+
   render() {
     return (
       <ApolloProvider client={client}>
@@ -31,7 +34,10 @@ export default class Container extends Component<{}> {
             <Subscribe to={[ConfigState]}>
               {(config: ConfigState) => (
                 <Flex column w="100%">
+                  <Tree data={config.state.data} />
                   <iframe
+                    id={"preview"}
+                    ref={e => (this.ele = e)}
                     src="http://localhost:4000"
                     width="100%"
                     height="100%"
