@@ -48,8 +48,6 @@ class CSSEditor extends Component<Props, State> {
     });
   }
 
-  componentDidUpdate() {}
-
   render() {
     if (!this.state.path) {
       return null;

@@ -1,3 +1,4 @@
+// This code is not trapiled
 // Copied from https://github.com/loogle18/xray-react/blob/master/src/
 
 function isEmpty(node) {
@@ -93,24 +94,6 @@ function walk(root, call) {
     }
     walk(node, call);
   });
-}
-
-function json(node) {
-  // Return empty and simple nodes.
-  if (isEmpty(node) || isSimple(node)) {
-    return node;
-  }
-
-  // Memoized props may also be simple, but we don't return if they're empty.
-  if (isSimple(node.memoizedProps)) {
-    return node.memoizedProps;
-  }
-
-  // In the last case we generate data for the corresponding React node.
-  return {
-    children: getChildren(node).map(json),
-    name: getDisplayName(node)
-  };
 }
 
 function insertCSS() {
@@ -234,6 +217,28 @@ function findCOmponents() {
   );
 }
 
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return (
+    s4() +
+    s4() +
+    "-" +
+    s4() +
+    "-" +
+    s4() +
+    "-" +
+    s4() +
+    "-" +
+    s4() +
+    s4() +
+    s4()
+  );
+}
+
 function recurse(
   fiberNode,
   node = {
@@ -241,20 +246,24 @@ function recurse(
     children: []
   }
 ) {
+  console.log(fiberNode);
+  const id = guid();
   const sibiliing = {
-    name: (fiberNode.type && fiberNode.type.displayName) || "Empty",
+    name: getDisplayName(fiberNode),
     path: fiberNode.type && fiberNode.type.__reactstandin__key,
+    id,
     children: []
   };
+
+  if (fiberNode.stateNode.setAttribute) {
+    fiberNode.stateNode.setAttribute("reignite-id", id);
+  }
 
   node.children.push(sibiliing);
 
   let sinode = fiberNode.sibling;
   while (sinode) {
-    if (sinode.child) {
-      recurse(sinode.child, node);
-    }
-
+    recurse(sinode, node);
     sinode = sinode.sibling;
   }
 
@@ -264,6 +273,23 @@ function recurse(
 
   return node;
 }
+
+window.addEventListener("message", function(event) {
+  if (event.data.highlight) {
+    const alreadyHighlightedElement = document.getElementsByClassName(
+      "reignite-highlight"
+    )[0];
+    if (alreadyHighlightedElement) {
+      alreadyHighlightedElement.classList.remove("reignite-highlight");
+    }
+    const elementToHighlight = document.querySelectorAll(
+      '[reignite-id="' + event.data.highlight + '"]'
+    )[0];
+    if (elementToHighlight) {
+      elementToHighlight.classList.add("reignite-highlight");
+    }
+  }
+});
 
 function getAllReactNodes() {
   var highlighters = [];

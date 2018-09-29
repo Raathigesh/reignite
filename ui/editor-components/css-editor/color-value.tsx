@@ -3,6 +3,7 @@ import { SketchPicker } from "react-color";
 
 interface State {
   displayColorPicker: boolean;
+  color: string;
 }
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
 }
 
 export default class ColorValue extends Component<Props, State> {
-  state = { displayColorPicker: false };
+  state = { displayColorPicker: false, color: "" };
 
   handleClick = () => {
     this.setState({ displayColorPicker: !this.state.displayColorPicker });

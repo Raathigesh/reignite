@@ -2,7 +2,7 @@ import React from "react";
 import styled from "react-emotion";
 import AdditionalComponent from "./AdditionalComponent.jsx";
 const HelloDiv = styled("div")({
-  backgroundColor: "#417505"
+  backgroundColor: "#d81f1f"
 });
 const HelloInnerDiv = styled("div")({
   backgroundColor: "#f5a623",
@@ -10,12 +10,10 @@ const HelloInnerDiv = styled("div")({
 });
 
 const App = function Home() {
-  return (
-    <HelloDiv>
+  return <HelloDiv>
       <AdditionalComponent />
       <HelloInnerDiv>Hey</HelloInnerDiv>
-    </HelloDiv>
-  );
+    </HelloDiv>;
 };
 
 export default App;

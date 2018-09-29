@@ -1,7 +1,5 @@
-import { Provider, Subscribe, Container } from "unstated";
-const prettier = require("prettier/standalone");
-const parser = require("prettier/parser-babylon");
-import { produce } from "immer";
+import { Container } from "unstated";
+import { onComponentTree } from "./post-message";
 
 interface State {
   data: any;
@@ -15,12 +13,10 @@ export default class ConfigState extends Container<State> {
   constructor() {
     super();
 
-    window.addEventListener("message", (event: any) => {
-      if (event.data.type === "reignite-tree") {
-        this.setState({
-          data: event.data.data
-        });
-      }
+    onComponentTree(treeData => {
+      this.setState({
+        data: treeData
+      });
     });
   }
 }
