@@ -243,23 +243,24 @@ function recurse(
   fiberNode,
   node = {
     name: "Root",
-    children: []
+    childNodes: []
   }
 ) {
   console.log(fiberNode);
   const id = guid();
   const sibiliing = {
-    name: getDisplayName(fiberNode),
+    label: getDisplayName(fiberNode),
     path: fiberNode.type && fiberNode.type.__reactstandin__key,
     id,
-    children: []
+    childNodes: [],
+    type: fiberNode.type && fiberNode.type.toString()
   };
 
   if (fiberNode.stateNode.setAttribute) {
     fiberNode.stateNode.setAttribute("reignite-id", id);
   }
 
-  node.children.push(sibiliing);
+  node.childNodes.push(sibiliing);
 
   let sinode = fiberNode.sibling;
   while (sinode) {
@@ -315,14 +316,6 @@ function getAllReactNodes() {
 
   window.document.body.append(xrayReactElementsWrapper);
 }
-
-fetch("http://localhost:4000/", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ query: '{fileSelection(filePath: "hey")}' })
-})
-  .then(res => res.json())
-  .then(res => console.log(res.data));
 
 function removeAllWrappers() {
   let wrappers = document.getElementsByClassName("wrapper");

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "react-emotion";
 import { Flex } from "reflexbox";
 import { produce } from "immer";
-import ConfigState from "./state";
+import TreeViewStore from "./store/tree-view";
 import { Subscribe, Provider } from "unstated";
 import { ApolloProvider } from "react-apollo";
 import { ApolloClient, HttpLink, InMemoryCache } from "apollo-client-preset";
@@ -29,10 +29,10 @@ export default class Container extends Component<{}> {
       <ApolloProvider client={client}>
         <Provider>
           <ContainerDiv>
-            <Subscribe to={[ConfigState]}>
-              {(config: ConfigState) => (
-                <Flex column w="100%">
-                  <Tree data={config.state.data} />
+            <Subscribe to={[TreeViewStore]}>
+              {(config: TreeViewStore) => (
+                <Flex w="100%">
+                  <Tree treeViewStore={config} />
                   <Preview />
                   <CSSEditor />
                 </Flex>

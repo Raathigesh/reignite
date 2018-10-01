@@ -1,44 +1,30 @@
 import React, { Component } from "react";
-import { Treebeard } from "react-treebeard";
-import style from "./style";
-import { highlightComponent } from "../../post-message";
+import { Classes, Icon, ITreeNode, Tooltip, Tree } from "@blueprintjs/core";
+import TreeViewStore from "../../store/tree-view";
+import styled from "react-emotion";
 
-interface State {
-  cursor?: {
-    active: boolean;
-  };
-}
+const Container = styled("div")`
+  padding-left: 5px;
+  min-width: 350px;
+`;
 
 interface Props {
-  data: any;
+  treeViewStore: TreeViewStore;
 }
 
-export default class Tree extends Component<Props, State> {
-  state = {
-    cursor: {
-      active: false
-    }
-  };
-
-  onToggle = (node: any, toggled: boolean) => {
-    if (this.state.cursor) {
-      this.state.cursor.active = false;
-    }
-    node.active = true;
-    if (node.children) {
-      node.toggled = toggled;
-    }
-    this.setState({ cursor: node });
-    highlightComponent(node.id);
-  };
-
+export default class Outline extends Component<Props> {
   render() {
+    const { treeViewStore } = this.props;
+    const treViewState = treeViewStore.state;
     return (
-      <Treebeard
-        data={this.props.data}
-        style={style}
-        onToggle={this.onToggle}
-      />
+      <Container>
+        <Tree
+          contents={treViewState.nodes}
+          onNodeClick={treeViewStore.handleNodeClick}
+          onNodeCollapse={treeViewStore.handleNodeCollapse}
+          onNodeExpand={treeViewStore.handleNodeExpand}
+        />
+      </Container>
     );
   }
 }

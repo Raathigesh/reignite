@@ -17,6 +17,14 @@ body {
 :focus {
     outline: #d1d1d1 auto 2px;
 }
+
+.bp3-tree-node-caret {
+    padding-top: 10px;
+}
+
+.bp3-tree-node-list {
+    margin-left: -12px !important;
+}
 `;
 
 const HotContainer = hot(module)(Container);
