@@ -6,6 +6,7 @@ import ColorValue from "./color-value";
 const Container = styled("div")``;
 const Field = styled("div")`
   display: flex;
+  color: white;
   padding-right: 5px;
   font-size: 12px;
 `;
@@ -13,6 +14,8 @@ const TextField = styled("input")`
   border-width: 0;
   border-bottom: 1px solid #d9d9d9;
   width: 80px;
+  background-color: transparent;
+  color: white;
 `;
 
 interface Props {

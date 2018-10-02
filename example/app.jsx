@@ -2,11 +2,11 @@ import React from "react";
 import styled from "react-emotion";
 import AdditionalComponent from "./AdditionalComponent.jsx";
 const HelloDiv = styled("div")({
-  backgroundColor: "#d81f1f"
+  backgroundColor: "#4a90e2"
 });
 const HelloInnerDiv = styled("div")({
-  backgroundColor: "#f5a623",
-  width: "700px"
+  backgroundColor: "#d0021b",
+  width: "200px"
 });
 
 const App = function Home() {

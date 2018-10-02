@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "react-emotion";
-import Draggable from "react-draggable";
 import gql from "graphql-tag";
 import { graphql, Mutation, Query } from "react-apollo";
 import { groupBy } from "ramda";
@@ -10,14 +9,9 @@ import PropertiesPanel from "./properties-panel";
 import { findRoots, getDisplayName } from "../../tree-walker";
 
 const Container = styled("div")`
-  background-color: #f6f6f6;
+  background-color: #09141c;
   padding: 10px;
-  width: 200px;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 99999;
+  width: 350px;
 `;
 
 interface CSSVariable {
@@ -27,66 +21,64 @@ interface CSSVariable {
   fieldType: string;
 }
 
-interface Props {}
-
-interface State {
-  path: string | null;
+interface Props {
+  path: string;
 }
 
-class CSSEditor extends Component<Props, State> {
-  state = {
-    path: null
-  };
-  componentDidMount() {
-    window.addEventListener("message", (event: any) => {
-      if (event.data.type === "reignite-preview") {
-        const path = event.data.path.split("#")[0];
-        this.setState({
-          path
-        });
-      }
-    });
-  }
-
-  render() {
-    if (!this.state.path) {
+class CSSEditor extends Component<Props> {
+  getPath = () => {
+    if (!this.props.path) {
       return null;
     }
+    return this.props.path.split("#")[0];
+  };
+
+  getDeclarationName = () => {
+    if (!this.props.path) {
+      return null;
+    }
+    return this.props.path.split("#")[1];
+  };
+
+  render() {
+    if (!this.getPath()) {
+      return <Container />;
+    }
     return (
-      <Draggable handle=".handle">
-        <Container>
-          <Query
-            query={GET_CSS_PROPERTIES}
-            variables={{ filePath: this.state.path }}
-          >
-            {({ loading, error, data, refetch }) => {
-              if (loading) {
-                return <div>Loading</div>;
-              }
+      <Container>
+        <Query
+          query={GET_CSS_PROPERTIES}
+          variables={{ filePath: this.getPath() }}
+        >
+          {({ loading, error, data, refetch }) => {
+            if (loading) {
+              return <div>Loading</div>;
+            }
 
-              let cssDeclarations: any = [];
+            let cssDeclarations: any = [];
 
-              if (data) {
-                cssDeclarations = data.cssDeclarations;
-              }
+            if (data) {
+              cssDeclarations = data.cssDeclarations;
+            }
 
-              return (
-                <Mutation mutation={CHANGE_COLOR}>
-                  {updateCSSVariable => {
-                    const groups = groupBy(
-                      (cssVariable: CSSVariable) => cssVariable.styleName
-                    )(cssDeclarations);
+            return (
+              <Mutation mutation={CHANGE_COLOR}>
+                {updateCSSVariable => {
+                  const groups = groupBy(
+                    (cssVariable: CSSVariable) => cssVariable.styleName
+                  )(cssDeclarations);
 
-                    return Object.entries(groups).map(([key, value]) => (
+                  return Object.entries(groups)
+                    .filter(([key]) => key === this.getDeclarationName())
+                    .map(([key, value]) => (
                       <div>
-                        <div>{key}</div>
                         <PropertiesPanel
                           properties={value}
                           onChange={(name: string, value: any) => {
                             updateCSSVariable({
                               variables: {
                                 declarationName: key,
-                                filePath: this.state.path,
+                                filePath: this.getPath(),
                                 propertyName: name,
                                 propertyValue: value
                               }
@@ -97,13 +89,12 @@ class CSSEditor extends Component<Props, State> {
                         />
                       </div>
                     ));
-                  }}
-                </Mutation>
-              );
-            }}
-          </Query>
-        </Container>
-      </Draggable>
+                }}
+              </Mutation>
+            );
+          }}
+        </Query>
+      </Container>
     );
   }
 }

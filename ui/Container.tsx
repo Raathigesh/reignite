@@ -34,7 +34,7 @@ export default class Container extends Component<{}> {
                 <Flex w="100%">
                   <Tree treeViewStore={config} />
                   <Preview />
-                  <CSSEditor />
+                  <CSSEditor path={config.state.activeNodePath} />
                 </Flex>
               )}
             </Subscribe>

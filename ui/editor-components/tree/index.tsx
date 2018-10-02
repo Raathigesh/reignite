@@ -6,6 +6,7 @@ import styled from "react-emotion";
 const Container = styled("div")`
   padding-left: 5px;
   min-width: 350px;
+  background-color: #09141c;
 `;
 
 interface Props {
@@ -19,6 +20,7 @@ export default class Outline extends Component<Props> {
     return (
       <Container>
         <Tree
+          className={Classes.DARK}
           contents={treViewState.nodes}
           onNodeClick={treeViewStore.handleNodeClick}
           onNodeCollapse={treeViewStore.handleNodeCollapse}

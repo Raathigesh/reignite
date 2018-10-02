@@ -4,11 +4,13 @@ import { ITreeNode, IconName } from "@blueprintjs/core";
 
 interface State {
   nodes: ITreeNode[];
+  activeNodePath: string | null;
 }
 
 export default class TreeViewStore extends Container<State> {
   state = {
-    nodes: []
+    nodes: [],
+    activeNodePath: null
   };
 
   constructor() {
@@ -33,6 +35,9 @@ export default class TreeViewStore extends Container<State> {
     nodeData.isSelected =
       originallySelected == null ? true : !originallySelected;
     this.setState(this.state);
+    this.setState({
+      activeNodePath: nodeData.path
+    });
 
     highlightComponent(nodeData.id);
   };

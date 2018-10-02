@@ -99,8 +99,8 @@ function walk(root, call) {
 function insertCSS() {
   var css = document.createElement("style");
   css.type = "text/css";
-  css.innerHTML = `body {margin: 0} .reignite-highlight { background-color: rgba(0, 0, 255, 0.25);
-    border: 2px solid blue;
+  css.innerHTML = `body {margin: 0} .reignite-highlight {
+    border: 1px solid blue;
     cursor: pointer;
     position: absolute;} .wrapper { bottom: 0;
     font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -176,10 +176,9 @@ function getReactNode(elem) {
   return result;
 }
 
-function createElemForComponent(elem, componentName, fiber) {
+function createElemForComponent(elem) {
   let xrayReactElem = document.createElement("div");
   let boundingClientRect = elem.getBoundingClientRect();
-  xrayReactElem.setAttribute("data-xray-react-element-name", componentName);
   xrayReactElem.className = "reignite-highlight";
   xrayReactElem.style.height = boundingClientRect.height + "px";
   xrayReactElem.style.width = boundingClientRect.width + "px";
@@ -189,17 +188,6 @@ function createElemForComponent(elem, componentName, fiber) {
     boundingClientRect.bottom - window.scrollY + "px";
   xrayReactElem.style.left = boundingClientRect.left - window.scrollX + "px";
   xrayReactElem.style.zIndex = 999999;
-  xrayReactElem.onclick = function() {
-    console.log("SENDING...");
-    findCOmponents();
-    parent.postMessage(
-      {
-        type: "reignite-preview",
-        path: fiber.type.__reactstandin__key
-      },
-      "http://localhost:9000"
-    );
-  };
   return xrayReactElem;
 }
 
@@ -277,42 +265,20 @@ function recurse(
 
 window.addEventListener("message", function(event) {
   if (event.data.highlight) {
-    const alreadyHighlightedElement = document.getElementsByClassName(
-      "reignite-highlight"
-    )[0];
-    if (alreadyHighlightedElement) {
-      alreadyHighlightedElement.classList.remove("reignite-highlight");
-    }
+    removeAllWrappers();
     const elementToHighlight = document.querySelectorAll(
       '[reignite-id="' + event.data.highlight + '"]'
     )[0];
     if (elementToHighlight) {
-      elementToHighlight.classList.add("reignite-highlight");
+      getAllReactNodes(elementToHighlight);
     }
   }
 });
 
-function getAllReactNodes() {
-  var highlighters = [];
-  for (let elem of window.document.body.getElementsByTagName("*")) {
-    var reactNode = getReactNode(elem);
-    if (reactNode) {
-      var highter = createElemForComponent(
-        elem,
-        reactNode.name,
-        reactNode.fiber
-      );
-      highlighters.push(highter);
-    }
-  }
-
+function getAllReactNodes(elem) {
   let xrayReactElementsWrapper = document.createElement("div");
   xrayReactElementsWrapper.className = "wrapper";
-
-  for (var x = 0; x < highlighters.length; x++) {
-    var item = highlighters[x];
-    xrayReactElementsWrapper.append(item);
-  }
+  xrayReactElementsWrapper.append(createElemForComponent(elem));
 
   window.document.body.append(xrayReactElementsWrapper);
 }
@@ -327,22 +293,6 @@ function removeAllWrappers() {
 const handleXrayReactToggle = function() {
   insertCSS();
   removeAllWrappers();
-  let keyMap = { 17: false };
-  document.body.addEventListener("keydown", function(event) {
-    if (event.keyCode in keyMap) {
-      findCOmponents();
-      removeAllWrappers();
-      keyMap[event.keyCode] = true;
-      if (keyMap[17]) {
-        getAllReactNodes();
-      }
-    }
-  });
-  document.body.addEventListener("keyup", function(event) {
-    if (event.keyCode in keyMap) {
-      keyMap[event.keyCode] = false;
-      removeAllWrappers();
-    }
-  });
+  findCOmponents();
 };
 handleXrayReactToggle();
