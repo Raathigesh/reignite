@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Classes, ITreeNode, Tooltip } from "@blueprintjs/core";
 import { Tree, Icon } from "antd";
-import "antd/dist/antd.css";
+import "../../style-override/override.less";
 import TreeViewStore from "../../store/tree-view";
 import styled, { css, injectGlobal } from "react-emotion";
 
