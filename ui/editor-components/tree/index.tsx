@@ -1,7 +1,15 @@
 import React, { Component } from "react";
-import { Classes, Icon, ITreeNode, Tooltip, Tree } from "@blueprintjs/core";
+import { Classes, ITreeNode, Tooltip } from "@blueprintjs/core";
+import { Tree, Icon } from "antd";
+import "antd/dist/antd.css";
 import TreeViewStore from "../../store/tree-view";
-import styled from "react-emotion";
+import styled, { css, injectGlobal } from "react-emotion";
+
+injectGlobal`
+.ant-tree-node-content-wrapper {
+  color: white !important;
+}
+`;
 
 const Container = styled("div")`
   padding-left: 5px;
@@ -9,8 +17,27 @@ const Container = styled("div")`
   background-color: #09141c;
 `;
 
+const TreeNodeStyle = css`
+  color: white;
+`;
+
 interface Props {
   treeViewStore: TreeViewStore;
+}
+
+const TreeNode = Tree.TreeNode;
+
+function getComponentForNode(node: ITreeNode) {
+  return (
+    <TreeNode
+      className={TreeNodeStyle}
+      icon={<Icon type="smile-o" />}
+      title={node.label}
+      key="0-0"
+    >
+      {node.childNodes.map(childNode => getComponentForNode(childNode))}
+    </TreeNode>
+  );
 }
 
 export default class Outline extends Component<Props> {
@@ -19,13 +46,11 @@ export default class Outline extends Component<Props> {
     const treViewState = treeViewStore.state;
     return (
       <Container>
-        <Tree
-          className={Classes.DARK}
-          contents={treViewState.nodes}
-          onNodeClick={treeViewStore.handleNodeClick}
-          onNodeCollapse={treeViewStore.handleNodeCollapse}
-          onNodeExpand={treeViewStore.handleNodeExpand}
-        />
+        <Tree showIcon defaultExpandAll defaultSelectedKeys={[]}>
+          {treViewState.nodes.map((node: ITreeNode) => {
+            return getComponentForNode(node);
+          })}
+        </Tree>
       </Container>
     );
   }
