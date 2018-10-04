@@ -6,12 +6,12 @@ import { groupBy } from "ramda";
 import CHANGE_COLOR from "./update-css-variable.gql";
 import GET_CSS_PROPERTIES from "./fetch-css-properties.gql";
 import PropertiesPanel from "./properties-panel";
-import { findRoots, getDisplayName } from "../../tree-walker";
 
 const Container = styled("div")`
   background-color: #09141c;
   padding: 10px;
   width: 350px;
+  height: 100%;
 `;
 
 interface CSSVariable {

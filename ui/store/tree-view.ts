@@ -1,15 +1,21 @@
 import { Container } from "unstated";
 import { onComponentTree, highlightComponent } from "../post-message";
-import { ITreeNode, IconName } from "@blueprintjs/core";
+
+interface TreeNode {
+  id: string;
+  childNodes: TreeNode[];
+}
 
 interface State {
-  nodes: ITreeNode[];
+  nodes: TreeNode[];
+  allIds: string[];
   activeNodePath: string | null;
 }
 
 export default class TreeViewStore extends Container<State> {
   state = {
     nodes: [],
+    allIds: [],
     activeNodePath: null
   };
 
@@ -17,63 +23,53 @@ export default class TreeViewStore extends Container<State> {
     super();
 
     onComponentTree(treeData => {
+      const nodeTree = this.mapToUIState(treeData);
       this.setState({
-        nodes: [this.mapToUIState(treeData)]
+        nodes: [nodeTree],
+        allIds: this.findAllIds(nodeTree)
       });
     });
   }
 
-  public handleNodeClick = (
-    nodeData: ITreeNode,
-    _nodePath: number[],
-    e: React.MouseEvent<HTMLElement>
-  ) => {
-    const originallySelected = nodeData.isSelected;
-    if (!e.shiftKey) {
-      this.forEachNode(this.state.nodes, n => (n.isSelected = false));
-    }
-    nodeData.isSelected =
-      originallySelected == null ? true : !originallySelected;
-    this.setState(this.state);
+  highlightComponentInPreview(id: string) {
+    highlightComponent(id);
+
+    const node = this.findNodeById(id);
     this.setState({
-      activeNodePath: nodeData.path
+      activeNodePath: node.path
     });
+  }
 
-    highlightComponent(nodeData.id);
-  };
-
-  public handleNodeCollapse = (nodeData: ITreeNode) => {
-    nodeData.isExpanded = false;
-    this.setState(this.state);
-  };
-
-  public handleNodeExpand = (nodeData: ITreeNode) => {
-    nodeData.isExpanded = true;
-    this.setState(this.state);
-  };
-
-  private forEachNode(nodes: ITreeNode[], callback: (node: ITreeNode) => void) {
-    if (nodes == null) {
-      return;
+  findNodeById(id: string, node: TreeNode = this.state.nodes[0]) {
+    if (node.id === id) {
+      return node;
     }
 
-    for (const node of nodes) {
-      callback(node);
-      this.forEachNode(node.childNodes, callback);
+    for (let child of node.childNodes) {
+      const result = this.findNodeById(id, child);
+      if (result) {
+        return result;
+      }
     }
+  }
+
+  findAllIds(node: TreeNode, allIds: string[] = []) {
+    allIds.push(node.id);
+
+    for (let child of node.childNodes) {
+      return this.findAllIds(child, allIds);
+    }
+
+    return allIds;
   }
 
   private mapToUIState(reactTree: any) {
     return {
+      type: reactTree.type,
       label: reactTree.label,
       path: reactTree.path,
       id: reactTree.id,
       hasCaret: reactTree.childNodes.length > 0,
-      isExpanded: true,
-      icon:
-        reactTree.type === "div"
-          ? ("helper-management" as IconName)
-          : ("folder-close" as IconName),
       childNodes: reactTree.childNodes.map(node => this.mapToUIState(node))
     };
   }

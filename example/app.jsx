@@ -1,19 +1,21 @@
 import React from "react";
 import styled from "react-emotion";
 import AdditionalComponent from "./AdditionalComponent.jsx";
-const HelloDiv = styled("div")({
-  backgroundColor: "#4a90e2"
-});
-const HelloInnerDiv = styled("div")({
-  backgroundColor: "#d0021b",
-  width: "200px"
-});
+const HelloDiv = styled("div")`
+  background-color: #7ed321;
+`;
+const HelloInnerDiv = styled("div")`
+  background-color: #bd10e0;
+  width: 500px;
+`;
 
 const App = function Home() {
-  return <HelloDiv>
+  return (
+    <HelloDiv>
       <AdditionalComponent />
       <HelloInnerDiv>Hey</HelloInnerDiv>
-    </HelloDiv>;
+    </HelloDiv>
+  );
 };
 
 export default App;

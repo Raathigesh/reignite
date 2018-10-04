@@ -2,13 +2,15 @@ import React from "react";
 import styled from "react-emotion";
 import { Flex } from "reflexbox";
 import ColorValue from "./color-value";
+import { Input } from "antd";
 
 const Container = styled("div")``;
 const Field = styled("div")`
   display: flex;
   color: white;
+  min-width: 150px;
   padding-right: 5px;
-  font-size: 12px;
+  font-size: 13px;
 `;
 const TextField = styled("input")`
   border-width: 0;
@@ -27,7 +29,11 @@ interface Props {
 
 export default function Property({ name, value, type, onChange }: Props) {
   let valueComponent = (
-    <TextField value={value} onChange={e => onChange(name, e.target.value)} />
+    <Input
+      size="small"
+      value={value}
+      onChange={e => onChange(name, e.target.value)}
+    />
   );
 
   switch (type) {
@@ -40,7 +46,7 @@ export default function Property({ name, value, type, onChange }: Props) {
 
   return (
     <Container>
-      <Flex>
+      <Flex pb={1}>
         <Field>{name}</Field>
         <Field>{valueComponent}</Field>
       </Flex>

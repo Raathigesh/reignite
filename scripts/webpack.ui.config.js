@@ -19,7 +19,7 @@ module.exports = env => ({
     hot: true,
     port: 9000
   },
-
+  devtool: "source-map",
   module: {
     rules: [
       {

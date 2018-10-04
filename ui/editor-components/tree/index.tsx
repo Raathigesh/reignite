@@ -15,6 +15,7 @@ const Container = styled("div")`
   padding-left: 5px;
   min-width: 350px;
   background-color: #09141c;
+  height: 100%;
 `;
 
 const TreeNodeStyle = css`
@@ -27,13 +28,26 @@ interface Props {
 
 const TreeNode = Tree.TreeNode;
 
+function getNodeIcon(type: "emotion" | "primitive" | "component") {
+  switch (type) {
+    case "emotion":
+      return "highlight";
+    case "primitive":
+      return "build";
+    case "component":
+      return "appstore";
+    default:
+      return "appstore";
+  }
+}
+
 function getComponentForNode(node: ITreeNode) {
   return (
     <TreeNode
       className={TreeNodeStyle}
-      icon={<Icon type="smile-o" />}
+      icon={<Icon type={getNodeIcon(node.type)} />}
       title={node.label}
-      key="0-0"
+      key={node.id || "hahaha"}
     >
       {node.childNodes.map(childNode => getComponentForNode(childNode))}
     </TreeNode>
@@ -46,11 +60,19 @@ export default class Outline extends Component<Props> {
     const treViewState = treeViewStore.state;
     return (
       <Container>
-        <Tree showIcon defaultExpandAll defaultSelectedKeys={[]}>
-          {treViewState.nodes.map((node: ITreeNode) => {
-            return getComponentForNode(node);
-          })}
-        </Tree>
+        {treViewState.nodes[0] && (
+          <Tree
+            showIcon
+            defaultExpandAll
+            onSelect={(keys, event) => {
+              console.log(event);
+              const selectedKey = keys[0];
+              treeViewStore.highlightComponentInPreview(selectedKey);
+            }}
+          >
+            {getComponentForNode(treViewState.nodes[0])}
+          </Tree>
+        )}
       </Container>
     );
   }

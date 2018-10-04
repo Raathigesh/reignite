@@ -8,6 +8,7 @@ import ReactComponentHighlighter from "../plugins/react-component-highlighter";
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackBar = require("webpackbar");
 var HtmlWebpackIncludeAssetsPlugin = require("html-webpack-include-assets-plugin");
+const ErrorOverlayPlugin = require("error-overlay-webpack-plugin");
 
 export class Compiler {
   private compiler: webpack.Compiler;
@@ -48,7 +49,8 @@ export class Compiler {
         new HtmlWebpackIncludeAssetsPlugin({
           assets: ["./client-script.js"],
           append: true
-        })
+        }),
+        new ErrorOverlayPlugin()
       ]
     });
 

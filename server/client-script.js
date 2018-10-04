@@ -227,6 +227,23 @@ function guid() {
   );
 }
 
+function getNodeType(fiberNode) {
+  let type = null;
+
+  if (fiberNode.type) {
+    const nodeType = fiberNode.type;
+    if (typeof nodeTypee === "string") {
+      type = "primitive";
+    } else if (nodeType.__emotion_base) {
+      type = "emotion";
+    } else {
+      type = "component";
+    }
+  }
+
+  return type;
+}
+
 function recurse(
   fiberNode,
   node = {
@@ -241,7 +258,7 @@ function recurse(
     path: fiberNode.type && fiberNode.type.__reactstandin__key,
     id,
     childNodes: [],
-    type: fiberNode.type && fiberNode.type.toString()
+    type: getNodeType(fiberNode)
   };
 
   if (fiberNode.stateNode.setAttribute) {
