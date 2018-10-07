@@ -1,13 +1,22 @@
 import React, { Component } from "react";
-import { Classes, ITreeNode, Tooltip } from "@blueprintjs/core";
 import { Tree, Icon } from "antd";
 import "../../style-override/override.less";
-import TreeViewStore from "../../store/tree-view";
+import TreeViewStore from "../../store/tree";
 import styled, { css, injectGlobal } from "react-emotion";
+import { inject, observer } from "mobx-react";
+import TreeNodeStore from "../../store/tree-node";
 
 injectGlobal`
 .ant-tree-node-content-wrapper {
   color: white !important;
+}
+
+.ant-tree li .ant-tree-node-content-wrappe {
+  padding: 0px 0px  !important;
+}
+
+.ant-tree li ul {
+  padding: 0 0 0 10px !important;
 }
 `;
 
@@ -23,10 +32,11 @@ const TreeNodeStyle = css`
 `;
 
 interface Props {
-  treeViewStore: TreeViewStore;
+  tree?: TreeViewStore;
 }
 
-const TreeNode = Tree.TreeNode;
+const TreeContainer = observer(Tree);
+const TreeNode = observer(Tree.TreeNode);
 
 function getNodeIcon(type: "emotion" | "primitive" | "component") {
   switch (type) {
@@ -41,7 +51,7 @@ function getNodeIcon(type: "emotion" | "primitive" | "component") {
   }
 }
 
-function getComponentForNode(node: ITreeNode) {
+function GetNodeComponent(node: TreeNodeStore) {
   return (
     <TreeNode
       className={TreeNodeStyle}
@@ -49,29 +59,30 @@ function getComponentForNode(node: ITreeNode) {
       title={node.label}
       key={node.id || "hahaha"}
     >
-      {node.childNodes.map(childNode => getComponentForNode(childNode))}
+      {node.childNodes.map(childNode => GetNodeComponent(childNode))}
     </TreeNode>
   );
 }
 
+@inject("tree")
+@observer
 export default class Outline extends Component<Props> {
   render() {
-    const { treeViewStore } = this.props;
-    const treViewState = treeViewStore.state;
+    const { tree } = this.props;
+    if (!tree) return null;
     return (
       <Container>
-        {treViewState.nodes[0] && (
-          <Tree
+        {tree.nodes.length && (
+          <TreeContainer
             showIcon
             defaultExpandAll
-            onSelect={(keys, event) => {
-              console.log(event);
+            onSelect={keys => {
               const selectedKey = keys[0];
-              treeViewStore.highlightComponentInPreview(selectedKey);
+              tree.highlightComponentInPreview(selectedKey);
             }}
           >
-            {getComponentForNode(treViewState.nodes[0])}
-          </Tree>
+            {GetNodeComponent(tree.nodes[0])}
+          </TreeContainer>
         )}
       </Container>
     );

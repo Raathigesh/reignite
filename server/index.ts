@@ -1,54 +1,18 @@
 import { GraphQLServer } from "graphql-yoga";
-import { resolve, join } from "path";
+import { resolve } from "path";
+import "reflect-metadata";
 import { Compiler } from "./server";
-import { getSyledDeclarations, updateCSSVariable } from "./services/css-in-js";
+import { getSchema } from "./api";
 
-const typeDefs = `
-  type Query {
-    cssDeclarations(filePath: String): [CSSProperty]!
-    fileSelection(filePath: String): String!
-  }
-  type Mutation {
-    updateCSSVariable(declarationName: String, filePath: String, propertyName: String, propertyValue: String): String
-  }
-  type CSSProperty {
-    styleName: String
-    name: String
-    value: String
-    fieldType: String
-  }
-`;
+getSchema().then(schema => {
+  const server = new GraphQLServer({ schema });
+  const projectRoot = resolve("./example");
+  const compiler = new Compiler(server.express, projectRoot);
 
-const resolvers = {
-  Query: {
-    cssDeclarations: async (_: any, { filePath }: any) =>
-      await getSyledDeclarations(filePath),
-    fileSelection: (_: any, { filePath }: any) =>
-      console.log(filePath) || "Got it"
-  },
-  Mutation: {
-    updateCSSVariable: async (
-      _: any,
-      { declarationName, filePath, propertyName, propertyValue }: any
-    ) =>
-      await updateCSSVariable(
-        declarationName,
-        filePath,
-        propertyName,
-        propertyValue
-      )
-  }
-};
-
-const server = new GraphQLServer({ typeDefs, resolvers });
-const projectRoot = resolve("./example");
-const compiler = new Compiler(server.express, projectRoot);
-
-getSyledDeclarations(join(projectRoot, "index.jsx"));
-
-server.start(
-  {
-    playground: "/debug"
-  },
-  () => console.log("Server is running on localhost:4000")
-);
+  server.start(
+    {
+      playground: "/debug"
+    },
+    () => console.log("Server is running on localhost:4000")
+  );
+});

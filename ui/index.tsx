@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { injectGlobal } from "emotion";
 import { hot } from "react-hot-loader";
+import "@babel/polyfill";
 import Container from "./Container";
 
 import "@blueprintjs/core/lib/css/blueprint.css";

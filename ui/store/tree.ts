@@ -1,33 +1,22 @@
-import { Container } from "unstated";
 import { onComponentTree, highlightComponent } from "../post-message";
+import TreeNode from "./tree-node";
+import { observable, IObservableArray } from "mobx";
 
-interface TreeNode {
-  id: string;
-  childNodes: TreeNode[];
-}
-
-interface State {
-  nodes: TreeNode[];
-  allIds: string[];
-  activeNodePath: string | null;
-}
-
-export default class TreeViewStore extends Container<State> {
-  state = {
-    nodes: [],
-    allIds: [],
-    activeNodePath: null
-  };
+export default class TreeViewStore {
+  @observable
+  public nodes: IObservableArray<TreeNode> = observable([]);
+  @observable
+  public allIds: IObservableArray<string> = observable([]);
+  @observable
+  public activeNodePath: string;
 
   constructor() {
-    super();
-
     onComponentTree(treeData => {
       const nodeTree = this.mapToUIState(treeData);
-      this.setState({
-        nodes: [nodeTree],
-        allIds: this.findAllIds(nodeTree)
-      });
+      this.nodes.clear();
+      this.nodes.push(...[nodeTree]);
+
+      this.allIds.push(...this.findAllIds(nodeTree));
     });
   }
 
@@ -35,12 +24,10 @@ export default class TreeViewStore extends Container<State> {
     highlightComponent(id);
 
     const node = this.findNodeById(id);
-    this.setState({
-      activeNodePath: node.path
-    });
+    this.activeNodePath = node.path;
   }
 
-  findNodeById(id: string, node: TreeNode = this.state.nodes[0]) {
+  findNodeById(id: string, node: TreeNode = this.nodes[0]) {
     if (node.id === id) {
       return node;
     }
@@ -64,13 +51,13 @@ export default class TreeViewStore extends Container<State> {
   }
 
   private mapToUIState(reactTree: any) {
-    return {
+    return new TreeNode({
       type: reactTree.type,
       label: reactTree.label,
       path: reactTree.path,
       id: reactTree.id,
       hasCaret: reactTree.childNodes.length > 0,
       childNodes: reactTree.childNodes.map(node => this.mapToUIState(node))
-    };
+    });
   }
 }

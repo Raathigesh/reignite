@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import styled from "react-emotion";
-import gql from "graphql-tag";
-import { graphql, Mutation, Query } from "react-apollo";
-import { groupBy } from "ramda";
-import CHANGE_COLOR from "./update-css-variable.gql";
-import GET_CSS_PROPERTIES from "./fetch-css-properties.gql";
 import PropertiesPanel from "./properties-panel";
+import { Subscribe } from "unstated";
+import StyleEditor from "../../store/style-editor";
 
 const Container = styled("div")`
   background-color: #09141c;
@@ -46,54 +43,13 @@ class CSSEditor extends Component<Props> {
     }
     return (
       <Container>
-        <Query
-          query={GET_CSS_PROPERTIES}
-          variables={{ filePath: this.getPath() }}
-        >
-          {({ loading, error, data, refetch }) => {
-            if (loading) {
-              return <div>Loading</div>;
-            }
-
-            let cssDeclarations: any = [];
-
-            if (data) {
-              cssDeclarations = data.cssDeclarations;
-            }
-
-            return (
-              <Mutation mutation={CHANGE_COLOR}>
-                {updateCSSVariable => {
-                  const groups = groupBy(
-                    (cssVariable: CSSVariable) => cssVariable.styleName
-                  )(cssDeclarations);
-
-                  return Object.entries(groups)
-                    .filter(([key]) => key === this.getDeclarationName())
-                    .map(([key, value]) => (
-                      <div>
-                        <PropertiesPanel
-                          properties={value}
-                          onChange={(name: string, value: any) => {
-                            updateCSSVariable({
-                              variables: {
-                                declarationName: key,
-                                filePath: this.getPath(),
-                                propertyName: name,
-                                propertyValue: value
-                              }
-                            }).then(() => {
-                              refetch();
-                            });
-                          }}
-                        />
-                      </div>
-                    ));
-                }}
-              </Mutation>
-            );
+        <Subscribe to={[StyleEditor]}>
+          {(styleEditorState: StyleEditor) => {
+            return styleEditorState.state.styledComponents.map(component => (
+              <div>{component.name}</div>
+            ));
           }}
-        </Query>
+        </Subscribe>
       </Container>
     );
   }

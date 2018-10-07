@@ -1,8 +1,0 @@
-query ItemsQuery($filePath: String) {
-  cssDeclarations(filePath: $filePath) {
-    styleName
-    name
-    value
-    fieldType
-  }
-}
