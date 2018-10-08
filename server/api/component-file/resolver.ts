@@ -1,5 +1,5 @@
 import { Resolver, Query, Arg } from "type-graphql";
-import ComponentFile from "./type";
+import ComponentFile from "../../../types/component-file/type";
 import { getSyledDeclarations } from "../../services/css-in-js";
 
 @Resolver(ComponentFile)

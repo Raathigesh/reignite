@@ -2,9 +2,8 @@ import traverse from "@babel/traverse";
 import generate from "@babel/generator";
 import { readFileContent, writeFile } from "../io";
 import { parse } from "../ast/parser";
-import { getTypeForCSSProperty } from "./util";
-import process, { Declaration } from "./postcss-plugin";
-import StyledComponent from "../../api/styled-component/type";
+import process from "./postcss-plugin";
+import StyledComponent from "../../../types/styled-component/type";
 
 interface StyleExpresions {
   name: string;

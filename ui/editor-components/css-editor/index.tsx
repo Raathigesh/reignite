@@ -3,7 +3,6 @@ import styled from "react-emotion";
 import { Query } from "react-apollo";
 import PropertiesPanel from "./properties-panel";
 import GET_CSS_PROPERTIES from "./fetch-css-properties.gql";
-import StyleEditor from "../../store/style-editor";
 import ComponentFile from "../../../server/api/component-file/type";
 
 const Container = styled("div")`
