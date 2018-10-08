@@ -3,7 +3,7 @@ import styled from "react-emotion";
 import { Query } from "react-apollo";
 import PropertiesPanel from "./properties-panel";
 import GET_CSS_PROPERTIES from "./fetch-css-properties.gql";
-import ComponentFile from "../../../server/api/component-file/type";
+import ComponentFile from "../../../types/component-file/type";
 
 const Container = styled("div")`
   background-color: #09141c;
