@@ -1,4 +1,4 @@
-query ItemsQuery($filePath: String) {
+query ItemsQuery($filePath: String!) {
   getStyledComponents(path: $filePath) {
     path
     styledComponents {
@@ -6,6 +6,7 @@ query ItemsQuery($filePath: String) {
       declarations {
         name
         value
+        type
       }
     }
   }

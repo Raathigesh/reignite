@@ -1,4 +1,5 @@
 import * as postcss from "postcss";
+import { getTypeForCSSProperty } from "./util";
 
 async function processWithPlugin(cssString: string, plugin: any) {
   return postcss([plugin]).process(cssString);
@@ -7,6 +8,7 @@ async function processWithPlugin(cssString: string, plugin: any) {
 export interface Declaration {
   name: string;
   value: string;
+  type: string;
 }
 
 export default async function process(cssString: string) {
@@ -16,7 +18,8 @@ export default async function process(cssString: string) {
       return root.walkDecls(rule => {
         results.push({
           name: rule.prop,
-          value: rule.value
+          value: rule.value,
+          type: getTypeForCSSProperty(rule.prop) || ""
         });
       });
     };

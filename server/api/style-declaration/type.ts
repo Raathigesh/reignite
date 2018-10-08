@@ -6,5 +6,8 @@ export default class StyleDeclaration {
   name: string;
 
   @Field()
+  type: string;
+
+  @Field()
   value: string;
 }

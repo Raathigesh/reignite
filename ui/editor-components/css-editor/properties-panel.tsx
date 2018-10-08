@@ -8,7 +8,7 @@ interface Props {
   properties: {
     name: string;
     value: any;
-    fieldType: string;
+    type: string;
   }[];
   onChange: (propertyName: string, value: string) => void;
 }
@@ -20,7 +20,7 @@ export default function PropertiesPanel({ properties, onChange }: Props) {
         <Property
           name={property.name}
           value={property.value}
-          type={property.fieldType}
+          type={property.type}
           onChange={onChange}
         />
       ))}

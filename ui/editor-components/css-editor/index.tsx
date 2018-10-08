@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import styled from "react-emotion";
+import { Query } from "react-apollo";
 import PropertiesPanel from "./properties-panel";
-import { Subscribe } from "unstated";
+import GET_CSS_PROPERTIES from "./fetch-css-properties.gql";
 import StyleEditor from "../../store/style-editor";
+import ComponentFile from "../../../server/api/component-file/type";
 
 const Container = styled("div")`
   background-color: #09141c;
@@ -19,37 +21,48 @@ interface CSSVariable {
 }
 
 interface Props {
-  path: string;
+  activeNodePath: string | null;
+  activeComponent: string | null;
 }
 
 class CSSEditor extends Component<Props> {
-  getPath = () => {
-    if (!this.props.path) {
-      return null;
-    }
-    return this.props.path.split("#")[0];
-  };
+  getPropertiesPanel = (data: { getStyledComponents: ComponentFile }) => {
+    const styledComponent = data.getStyledComponents.styledComponents.find(
+      component => component.name === this.props.activeComponent
+    );
 
-  getDeclarationName = () => {
-    if (!this.props.path) {
-      return null;
+    if (!styledComponent) {
+      return [];
     }
-    return this.props.path.split("#")[1];
+
+    return styledComponent.declarations;
   };
 
   render() {
-    if (!this.getPath()) {
+    if (!this.props.activeNodePath) {
       return <Container />;
     }
+
     return (
       <Container>
-        <Subscribe to={[StyleEditor]}>
-          {(styleEditorState: StyleEditor) => {
-            return styleEditorState.state.styledComponents.map(component => (
-              <div>{component.name}</div>
-            ));
+        <Query
+          query={GET_CSS_PROPERTIES}
+          variables={{ filePath: this.props.activeNodePath }}
+        >
+          {({ loading, error, data }) => {
+            if (loading) return "Loading...";
+            if (error) return `Error! ${error.message}`;
+
+            return (
+              <div>
+                <PropertiesPanel
+                  properties={this.getPropertiesPanel(data)}
+                  onChange={() => {}}
+                />
+              </div>
+            );
           }}
-        </Subscribe>
+        </Query>
       </Container>
     );
   }

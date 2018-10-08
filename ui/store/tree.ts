@@ -8,7 +8,9 @@ export default class TreeViewStore {
   @observable
   public allIds: IObservableArray<string> = observable([]);
   @observable
-  public activeNodePath: string;
+  public activeNodePath: string | null;
+  @observable
+  public activeComponent: string | null;
 
   constructor() {
     onComponentTree(treeData => {
@@ -24,7 +26,17 @@ export default class TreeViewStore {
     highlightComponent(id);
 
     const node = this.findNodeById(id);
-    this.activeNodePath = node.path;
+    this.setNodePath(node.path);
+  }
+
+  setNodePath(path: string) {
+    console.log("📍 Current Path", path);
+    if (!path) {
+      this.activeComponent = null;
+      this.activeNodePath = null;
+    }
+    this.activeNodePath = path.split("#")[0];
+    this.activeComponent = path.split("#")[1];
   }
 
   findNodeById(id: string, node: TreeNode = this.nodes[0]) {
