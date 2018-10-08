@@ -32,6 +32,7 @@ export default class TreeViewStore {
 
   setNodePath(path: string) {
     console.log("📍 Current Path", path);
+
     if (!path) {
       this.activeComponent = null;
       this.activeNodePath = null;
