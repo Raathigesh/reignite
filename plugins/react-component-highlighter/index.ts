@@ -12,6 +12,14 @@ export default class ReactComponentHighlighter {
             }
           }
         );
+
+        //buildModule
+        compilation.hooks.buildModule.tap(
+          "ReactComponentHighlighter",
+          (modules: any) => {
+            console.log(modules);
+          }
+        );
       }
     );
   }

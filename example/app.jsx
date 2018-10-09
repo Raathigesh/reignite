@@ -6,14 +6,16 @@ const HelloDiv = styled("div")`
 `;
 const HelloInnerDiv = styled("div")`
   background-color: #7ed321;
-  width: 400px;
+  width: 500px;
 `;
 
 const App = function Home() {
-  return <HelloDiv>
+  return (
+    <HelloDiv>
       <AdditionalComponent />
       <HelloInnerDiv>Hey</HelloInnerDiv>
-    </HelloDiv>;
+    </HelloDiv>
+  );
 };
 
 export default App;
