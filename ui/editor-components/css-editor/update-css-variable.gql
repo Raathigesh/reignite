@@ -5,9 +5,11 @@ mutation UpdateCSSVariable(
   $propertyValue: String!
 ) {
   updateCSSVariable(
-    declarationName: $declarationName
-    filePath: $filePath
-    propertyName: $propertyName
-    propertyValue: $propertyValue
-  )
+    path: $filePath
+    property: $propertyName
+    value: $propertyValue
+    name: $declarationName
+  ) {
+    path
+  }
 }

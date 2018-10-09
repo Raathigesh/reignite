@@ -2,7 +2,7 @@ import traverse from "@babel/traverse";
 import generate from "@babel/generator";
 import { readFileContent, writeFile } from "../io";
 import { parse } from "../ast/parser";
-import process from "./postcss-plugin";
+import process, { updateProperty } from "./postcss-plugin";
 import StyledComponent from "../../../types/styled-component/type";
 
 interface StyleExpresions {
@@ -24,6 +24,31 @@ export async function getTaggedTemplateExpressionStrings(ast: any) {
   return results;
 }
 
+export async function updateCSSProperty(
+  path: string,
+  name: string,
+  property: string,
+  value: string
+) {
+  const content = await readFileContent(path);
+  const ast = parse(content);
+  let updatedCssString = "";
+
+  traverse(ast, {
+    TaggedTemplateExpression(path: any) {
+      if (path.parent.id.name === name) {
+        const cssString = path.node.quasi.quasis[0].value.raw;
+        updatedCssString = updateProperty(cssString, property, value);
+        path.node.quasi.quasis[0].value.raw = updatedCssString;
+      }
+    }
+  });
+
+  const code = generate(ast).code;
+  await writeFile(path, code);
+  return process(updatedCssString);
+}
+
 export async function getSyledDeclarations(
   path: string
 ): Promise<StyledComponent[]> {
@@ -35,41 +60,9 @@ export async function getSyledDeclarations(
     cssStrings.map(async function(cssString) {
       return {
         name: cssString.name,
-        declarations: await process(cssString.cssString)
+        declarations: process(cssString.cssString)
       };
     })
   );
   return declarations;
-}
-
-export async function updateCSSVariable(
-  declarationName: string,
-  path: string,
-  variableName: string,
-  value: string
-) {
-  const content = await readFileContent(path);
-  const ast = parse(content);
-  traverse(ast, {
-    VariableDeclaration(path: any) {
-      const node = path.node;
-      if (
-        node.declarations[0].init.callee &&
-        node.declarations[0].init.callee.callee.name === "styled"
-      ) {
-        const styleName = node.declarations[0].id.name;
-        const styleObject = node.declarations[0].init.arguments[0];
-        if (styleName === declarationName) {
-          styleObject.properties.map((property: any) => {
-            if (property.key.name === variableName) {
-              property.value.value = value;
-            }
-          });
-        }
-      }
-    }
-  });
-
-  const code = generate(ast).code;
-  writeFile(path, code);
 }

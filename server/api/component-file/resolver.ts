@@ -1,6 +1,19 @@
-import { Resolver, Query, Arg } from "type-graphql";
+import {
+  Resolver,
+  Query,
+  Arg,
+  Mutation,
+  Subscription,
+  PubSubEngine,
+  PubSub,
+  Root
+} from "type-graphql";
 import ComponentFile from "../../../types/component-file/type";
-import { getSyledDeclarations } from "../../services/css-in-js";
+import {
+  getSyledDeclarations,
+  updateCSSProperty
+} from "../../services/css-in-js";
+import StyleDeclaration from "../../../types/style-declaration/type";
 
 @Resolver(ComponentFile)
 export default class ComponentFileResolver {
@@ -10,5 +23,29 @@ export default class ComponentFileResolver {
     componentFile.path = path;
     componentFile.styledComponents = await getSyledDeclarations(path);
     return componentFile;
+  }
+
+  @Mutation(returns => ComponentFile)
+  async updateCSSVariable(
+    @Arg("path") path: string,
+    @Arg("name") name: string,
+    @Arg("property") property: string,
+    @Arg("value") value: string,
+    @PubSub() pubSub: PubSubEngine
+  ): Promise<ComponentFile> {
+    const result = await updateCSSProperty(path, name, property, value);
+
+    const componentFile = new ComponentFile();
+    componentFile.path = path;
+    componentFile.styledComponents = await getSyledDeclarations(path);
+    pubSub.publish("FILE_CHANGE", componentFile);
+    return componentFile;
+  }
+
+  @Subscription({
+    topics: "FILE_CHANGE"
+  })
+  changeToFile(@Root() notificationPayload: ComponentFile): ComponentFile {
+    return notificationPayload;
   }
 }

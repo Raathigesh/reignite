@@ -1,8 +1,8 @@
 import * as postcss from "postcss";
 import { getTypeForCSSProperty } from "./util";
 
-async function processWithPlugin(cssString: string, plugin: any) {
-  return postcss([plugin]).process(cssString);
+function processWithPlugin(cssString: string, plugin: any) {
+  return postcss([plugin]).process(cssString).css;
 }
 
 export interface Declaration {
@@ -11,7 +11,7 @@ export interface Declaration {
   type: string;
 }
 
-export default async function process(cssString: string) {
+export default function process(cssString: string) {
   const results: Declaration[] = [];
   const DeclarationWalker = postcss.plugin("reignite-style-parser", () => {
     return function(root, result) {
@@ -25,6 +25,24 @@ export default async function process(cssString: string) {
     };
   });
 
-  await processWithPlugin(cssString, DeclarationWalker);
+  processWithPlugin(cssString, DeclarationWalker);
   return results;
+}
+
+export function updateProperty(
+  cssString: string,
+  propertyName: string,
+  propertyValue: string
+) {
+  const DeclarationWalker = postcss.plugin("reignite-style-parser", () => {
+    return function(root, result) {
+      return root.walkDecls(rule => {
+        if (rule.prop === propertyName) {
+          rule.value = propertyValue;
+        }
+      });
+    };
+  });
+
+  return processWithPlugin(cssString, DeclarationWalker);
 }
