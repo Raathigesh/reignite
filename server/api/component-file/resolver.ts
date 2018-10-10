@@ -38,14 +38,16 @@ export default class ComponentFileResolver {
     const componentFile = new ComponentFile();
     componentFile.path = path;
     componentFile.styledComponents = await getSyledDeclarations(path);
-    pubSub.publish("FILE_CHANGE", componentFile);
     return componentFile;
   }
 
-  @Subscription({
+  @Subscription(returns => ComponentFile, {
     topics: "FILE_CHANGE"
   })
-  changeToFile(@Root() notificationPayload: ComponentFile): ComponentFile {
-    return notificationPayload;
+  async changeToFile(@Root() filePath: string): Promise<ComponentFile> {
+    const componentFile = new ComponentFile();
+    componentFile.path = filePath;
+    componentFile.styledComponents = await getSyledDeclarations(filePath);
+    return componentFile;
   }
 }

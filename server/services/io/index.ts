@@ -1,4 +1,5 @@
 import * as fs from "fs";
+const recursive = require("recursive-readdir");
 
 export function readFileContent(path: string) {
   return new Promise<string>((resolve, reject) => {
@@ -20,6 +21,17 @@ export function writeFile(path: string, content: string) {
       } else {
         resolve();
       }
+    });
+  });
+}
+
+export async function getProjectFiles(projectRoot: string) {
+  return new Promise((resolve, reject) => {
+    recursive(projectRoot, function(err: any, files: string[]) {
+      if (err) {
+        reject(err);
+      }
+      resolve(files);
     });
   });
 }

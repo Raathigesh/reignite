@@ -44,7 +44,7 @@ export class Compiler {
           path.join(projectRoot, "node_modules")
         ),
         new webpack.HotModuleReplacementPlugin(),
-        new ReactComponentHighlighter(),
+        new ReactComponentHighlighter(projectRoot),
         new WebpackBar(),
         new HtmlWebpackIncludeAssetsPlugin({
           assets: ["./client-script.js"],
