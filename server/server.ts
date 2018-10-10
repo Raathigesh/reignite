@@ -17,6 +17,7 @@ export class Compiler {
     this.compiler = webpack({
       entry: [
         path.join(projectRoot, "index.jsx"),
+        path.join(__dirname, "client-script.js"),
         "webpack-hot-middleware/client"
       ],
       mode: "development",
@@ -46,10 +47,6 @@ export class Compiler {
         new webpack.HotModuleReplacementPlugin(),
         new ReactComponentHighlighter(projectRoot),
         new WebpackBar(),
-        new HtmlWebpackIncludeAssetsPlugin({
-          assets: ["./client-script.js"],
-          append: true
-        }),
         new ErrorOverlayPlugin()
       ]
     });
@@ -59,15 +56,6 @@ export class Compiler {
         publicPath: "/"
       })
     );
-
-    expressApp.use(function(req: any, res: any, next: any) {
-      if (req.originalUrl.includes("client-script.js")) {
-        const filePath = path.join(__dirname, "./client-script.js");
-        res.sendFile(filePath);
-      } else {
-        next();
-      }
-    });
 
     expressApp.use(require("webpack-hot-middleware")(this.compiler));
   }

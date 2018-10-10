@@ -309,7 +309,17 @@ function removeAllWrappers() {
 
 const handleXrayReactToggle = function() {
   insertCSS();
-  removeAllWrappers();
   findCOmponents();
+  removeAllWrappers();
 };
-handleXrayReactToggle();
+// ;
+
+module.hot.addStatusHandler(status => {
+  console.log(status);
+  handleXrayReactToggle();
+  // React to the current status...
+});
+
+window.onload = () => {
+  handleXrayReactToggle();
+};

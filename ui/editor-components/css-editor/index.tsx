@@ -8,6 +8,7 @@ import GET_CSS_PROPERTIES from "./fetch-css-properties.gql";
 import UPDATE_CSS_PROPERTIES from "./update-css-variable.gql";
 import ComponentFile from "../../../types/component-file/type";
 import StyleDeclaration from "../../../types/style-declaration/type";
+import { Icon } from "antd";
 
 const Container = styled("div")`
   background-color: #09141c;
@@ -15,6 +16,8 @@ const Container = styled("div")`
   width: 350px;
   height: 100%;
 `;
+
+const Loading = styled("div")``;
 
 interface CSSVariable {
   styleName: string;
@@ -92,23 +95,32 @@ class CSSEditor extends Component<Props> {
 
             return (
               <Mutation mutation={UPDATE_CSS_PROPERTIES}>
-                {(updateCSSVariable, { data: updatedData }) => (
-                  <div>
-                    <PropertiesPanel
-                      properties={this.getPropertiesPanel(initialData)}
-                      onChange={async (name: string, value: string) => {
-                        await updateCSSVariable({
-                          variables: {
-                            declarationName: this.props.activeComponent,
-                            filePath: this.props.activeNodePath,
-                            propertyName: name,
-                            propertyValue: value
-                          }
-                        });
-                      }}
-                    />
-                  </div>
-                )}
+                {(updateCSSVariable, { data: updatedData, loading }) => {
+                  if (loading) {
+                    return (
+                      <Loading>
+                        <Icon type="loading" />
+                      </Loading>
+                    );
+                  }
+                  return (
+                    <div>
+                      <PropertiesPanel
+                        properties={this.getPropertiesPanel(initialData)}
+                        onChange={async (name: string, value: string) => {
+                          await updateCSSVariable({
+                            variables: {
+                              declarationName: this.props.activeComponent,
+                              filePath: this.props.activeNodePath,
+                              propertyName: name,
+                              propertyValue: value
+                            }
+                          });
+                        }}
+                      />
+                    </div>
+                  );
+                }}
               </Mutation>
             );
           }}
