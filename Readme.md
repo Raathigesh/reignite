@@ -1,8 +1,6 @@
 # Reignite
 
-Reignite is an opinionated rapid prototyping environment for ReactJS. Reignite lets you to get started faster and allow you to focus on executing your ideas by taking over the mundane tasks.
-
-Reignite is not another attempt to create a React IDE, instead Reignite complements your IDE.
+Reignite is an opinionated rapid prototyping environment for ReactJS.
 
 # Contribute
 
