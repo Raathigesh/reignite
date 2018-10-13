@@ -21,6 +21,7 @@ export class Compiler {
         "webpack-hot-middleware/client"
       ],
       mode: "development",
+      devtool: "source-map",
       module: {
         rules: [
           {

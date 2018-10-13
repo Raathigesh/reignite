@@ -8,6 +8,8 @@ export default class TreeViewStore {
   @observable
   public allIds: IObservableArray<string> = observable([]);
   @observable
+  public selectedNode: string;
+  @observable
   public activeNodePath: string | null;
   @observable
   public activeComponent: string | null;
@@ -23,6 +25,7 @@ export default class TreeViewStore {
   }
 
   highlightComponentInPreview(id: string) {
+    this.selectedNode = id;
     highlightComponent(id);
     const node = this.findNodeById(id);
     if (node) {

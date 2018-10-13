@@ -151,11 +151,11 @@ function getReactNode(elem) {
             fiber,
             name: fiber.constructor.name
           };
-          console.log({
+          /*   console.log({
             fiber,
             name: fiber.constructor.name,
             elem
-          });
+          }); */
         }
       } else {
         let fiber =
@@ -195,7 +195,7 @@ function findCOmponents() {
   // ['ComponentA', 'ComponentB']
   const roots = findRoots(window.document.body);
   const tree = recurse(roots[0]);
-  console.log("tree", tree);
+  // console.log("tree", tree);
   parent.postMessage(
     {
       type: "reignite-tree",

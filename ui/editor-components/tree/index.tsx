@@ -5,6 +5,7 @@ import TreeViewStore from "../../store/tree";
 import styled, { css, injectGlobal } from "react-emotion";
 import { inject, observer } from "mobx-react";
 import TreeNodeStore from "../../store/tree-node";
+import ActionPanel from "./action-panel";
 
 injectGlobal`
 .ant-tree-node-content-wrapper {
@@ -72,10 +73,12 @@ export default class Outline extends Component<Props> {
     if (!tree) return null;
     return (
       <Container>
+        <ActionPanel />
         {tree.nodes.length && (
           <TreeContainer
             showIcon
             defaultExpandAll
+            selectedKeys={[tree.selectedNode]}
             onSelect={keys => {
               const selectedKey = keys[0];
               tree.highlightComponentInPreview(selectedKey);

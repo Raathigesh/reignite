@@ -4,6 +4,9 @@ import { injectGlobal } from "emotion";
 import { hot } from "react-hot-loader";
 import "@babel/polyfill";
 import Container from "./Container";
+import installGlobalHook from "../react-devtools/backend/installGlobalHook";
+import setupBackend from "../react-devtools/backend/backend";
+import getData from "../react-devtools/backend/getData";
 
 import "@blueprintjs/core/lib/css/blueprint.css";
 require("typeface-karla");
@@ -30,3 +33,16 @@ body {
 
 const HotContainer = hot(module)(Container);
 ReactDOM.render(<HotContainer />, document.getElementById("root"));
+
+installGlobalHook(window);
+const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+setupBackend(hook);
+hook.sub("renderer-attached", ({ id, renderer, helpers }) => {
+  // helpers.walkTree();
+});
+
+hook.sub("mount", ({ renderer, internalInstance, data }) => {
+  console.log(data.id);
+});
+
+hook.sub("root", ({ renderer, internalInstance }) => {});
