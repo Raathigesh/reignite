@@ -1,3 +1,5 @@
+// https://github.com/facebook/react-devtools/blob/master/frontend/Highlighter/Overlay.js
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.

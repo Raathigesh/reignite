@@ -16,7 +16,7 @@ export class Compiler {
   constructor(expressApp: any, projectRoot: string) {
     this.compiler = webpack({
       entry: {
-        inspector: path.join(__dirname, "inspector.ts"),
+        inspector: path.join(__dirname, "../inspector/inspector.ts"),
         main: path.join(projectRoot, "index.jsx"),
         hmr: "webpack-hot-middleware/client"
       },
