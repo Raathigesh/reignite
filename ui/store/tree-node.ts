@@ -14,7 +14,7 @@ export default class TreeNode {
   @observable
   public hasCaret: boolean;
   @observable
-  public childNodes: IObservableArray<TreeNode> = observable([]);
+  public children: IObservableArray<TreeNode> = observable([]);
 
   constructor({
     id,
@@ -36,6 +36,6 @@ export default class TreeNode {
     this.label = label;
     this.path = path;
     this.hasCaret = hasCaret;
-    this.childNodes.push(...childNodes);
+    this.children.push(...childNodes);
   }
 }

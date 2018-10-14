@@ -1,20 +1,44 @@
 import installGlobalHook from "../react-devtools/backend/installGlobalHook";
 import setupBackend from "../react-devtools/backend/backend";
+import Overlay from "./overlay.ts";
 installGlobalHook(window);
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 setupBackend(hook);
 
 class Inspector {
   public dataByInstance: WeakMap<any, any> = new WeakMap();
+  public instanceById: Map<any, any> = new Map();
   public rootInternalInstance: any = null;
+  public helpers: any;
 
   constructor() {
+    const overlay = new Overlay(window);
+    window.addEventListener(
+      "message",
+      event => {
+        if (event.data.highlight) {
+          const internalInstance = this.instanceById.get(event.data.highlight);
+          const domElement = this.helpers.getNativeFromReactElement(
+            internalInstance
+          );
+          overlay.inspect(domElement, "Document");
+        }
+      },
+      false
+    );
+
     hook.sub("renderer-attached", ({ id, renderer, helpers }: any) => {
+      this.helpers = helpers;
       console.log("renderer");
     });
 
     hook.sub("mount", ({ renderer, internalInstance, data }: any) => {
-      this.dataByInstance.set(internalInstance, data);
+      const id = guid();
+      this.dataByInstance.set(internalInstance, {
+        id,
+        data
+      });
+      this.instanceById.set(id, internalInstance);
       console.log(data);
     });
 
@@ -28,6 +52,7 @@ class Inspector {
         },
         "http://localhost:9000"
       );
+
       console.log(tree);
     });
   }
@@ -35,12 +60,15 @@ class Inspector {
   getTree = (
     internalInstance: any,
     root: any = {
+      id: "",
       name: "root",
       children: []
     }
   ) => {
-    const nodeData = this.dataByInstance.get(internalInstance);
+    const item = this.dataByInstance.get(internalInstance);
+    const nodeData = item.data;
     const node = {
+      id: item.id,
       name: nodeData.name,
       children: []
     } as any;

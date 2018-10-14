@@ -25,12 +25,12 @@ export default class TreeViewStore {
   }
 
   highlightComponentInPreview(id: string) {
-    this.selectedNode = id;
+    //this.selectedNode = id;
     highlightComponent(id);
-    const node = this.findNodeById(id);
+    /*  const node = this.findNodeById(id);
     if (node) {
       this.setNodePath(node.path);
-    }
+    } */
   }
 
   setNodePath(path: string) {
@@ -48,7 +48,7 @@ export default class TreeViewStore {
     if (node.id === id) {
       return node;
     }
-    for (let child of node.childNodes) {
+    for (let child of node.children) {
       const result = this.findNodeById(id, child);
       if (result) {
         return result;
@@ -59,7 +59,7 @@ export default class TreeViewStore {
 
   findAllIds(node: TreeNode, allIds: string[] = []): string[] {
     allIds.push(node.id);
-    for (let child of node.childNodes) {
+    for (let child of node.children) {
       return this.findAllIds(child, allIds);
     }
     return allIds;

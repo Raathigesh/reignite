@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "react-emotion";
+import styled from "styled-components";
 import AdditionalComponent from "./AdditionalComponent.jsx";
 const HelloDiv = styled("div")`
   background-color: #7ed321;
@@ -16,11 +16,13 @@ const Bar = styled("button")`
 `;
 
 const App = function Home() {
-  return <HelloDiv>
+  return (
+    <HelloDiv>
       <AdditionalComponent />
       <HelloInnerDiv>Hey</HelloInnerDiv>
       <Bar>Hello</Bar>
-    </HelloDiv>;
+    </HelloDiv>
+  );
 };
 
 export default App;
