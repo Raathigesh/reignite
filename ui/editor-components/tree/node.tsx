@@ -16,6 +16,7 @@ const LabelContainer = styled("div")`
   display: flex;
   flex-direction: row;
   align-items: center;
+  color: ${props => (props.hover ? "wheat" : "white")};
 `;
 
 const Label = styled("span")`
@@ -34,6 +35,10 @@ interface Props {
   highlightComponent: (id: string) => void;
 }
 
+interface State {
+  hover: boolean;
+}
+
 function getNodeIcon(type: "Native" | "Composite" | "Text" | "Wrapper") {
   switch (type) {
     case "Native":
@@ -49,17 +54,33 @@ function getNodeIcon(type: "Native" | "Composite" | "Text" | "Wrapper") {
   }
 }
 
-export default class TreeNode extends Component<Props> {
+export default class TreeNode extends Component<Props, State> {
+  state = {
+    hover: false
+  };
+
+  handleHover = () => {
+    this.setState({
+      hover: true
+    });
+    this.props.highlightComponent(this.props.root.id);
+  };
+
+  handleMouseOut = () => {
+    this.setState({
+      hover: false
+    });
+  };
+
   render() {
-    const { label, children, id, type } = this.props.root;
+    const { label, children, type } = this.props.root;
     return (
       <Container>
-        <LabelContainer>
+        <LabelContainer hover={this.state.hover}>
           {getNodeIcon(type)}
           <Label
-            onMouseOver={() => {
-              this.props.highlightComponent(id);
-            }}
+            onMouseOver={this.handleHover}
+            onMouseLeave={this.handleMouseOut}
           >
             {label}
           </Label>
