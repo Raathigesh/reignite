@@ -15,11 +15,11 @@ export class Compiler {
 
   constructor(expressApp: any, projectRoot: string) {
     this.compiler = webpack({
-      entry: [
-        path.join(projectRoot, "index.jsx"),
-        path.join(__dirname, "client-script.js"),
-        "webpack-hot-middleware/client"
-      ],
+      entry: {
+        inspector: path.join(__dirname, "inspector.ts"),
+        main: path.join(projectRoot, "index.jsx"),
+        hmr: "webpack-hot-middleware/client"
+      },
       mode: "development",
       devtool: "source-map",
       module: {
@@ -39,7 +39,8 @@ export class Compiler {
         new HtmlWebpackPlugin({
           title: "Config Pack",
           template: require("html-webpack-template"),
-          appMountId: "root"
+          appMountId: "root",
+          inject: false
         }),
         new PackageInstallPlugin(new PackageInstaller(projectRoot)),
         new WatchMissingNodeModulesPlugin(
@@ -47,8 +48,8 @@ export class Compiler {
         ),
         new webpack.HotModuleReplacementPlugin(),
         new ReactComponentHighlighter(projectRoot),
-        new WebpackBar(),
-        new ErrorOverlayPlugin()
+        new WebpackBar()
+        //  new ErrorOverlayPlugin()
       ]
     });
 

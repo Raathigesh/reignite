@@ -68,11 +68,11 @@ export default class TreeViewStore {
   private mapToUIState(reactTree: any) {
     return new TreeNode({
       type: reactTree.type,
-      label: reactTree.label,
+      label: reactTree.name,
       path: reactTree.path,
       id: reactTree.id,
-      hasCaret: reactTree.childNodes.length > 0,
-      childNodes: reactTree.childNodes.map(node => this.mapToUIState(node))
+      hasCaret: reactTree.children.length > 0,
+      childNodes: reactTree.children.map(node => this.mapToUIState(node))
     });
   }
 }

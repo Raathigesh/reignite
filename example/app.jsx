@@ -6,7 +6,7 @@ const HelloDiv = styled("div")`
   color: white;
 `;
 const HelloInnerDiv = styled("div")`
-  background-color: #f8e71c;
+  background-color: #bd4040;
 
   width: 505px;
   border: 5px;
