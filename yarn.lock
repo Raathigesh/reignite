@@ -5839,7 +5839,7 @@ pkg-dir@^3.0.0:
   dependencies:
     find-up "^3.0.0"
 
-popper.js@^1.14.1:
+popper.js@^1.11.1, popper.js@^1.14.1:
   version "1.14.4"
   resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.4.tgz#8eec1d8ff02a5a3a152dd43414a15c7b79fd69b6"
 
@@ -6643,6 +6643,12 @@ react-svg-loader@^2.1.0:
   dependencies:
     loader-utils "^1.1.0"
     react-svg-core "^2.1.0"
+
+react-tippy@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/react-tippy/-/react-tippy-1.2.3.tgz#8aef183ec4986ca7c5c556465013d95196fecfd8"
+  dependencies:
+    popper.js "^1.11.1"
 
 react-transition-group@^2.0.0:
   version "2.5.0"

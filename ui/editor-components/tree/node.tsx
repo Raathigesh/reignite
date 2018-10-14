@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled from "react-emotion";
 import { Package, Edit3, Code } from "react-feather";
+import { Tooltip } from "react-tippy";
+import "react-tippy/dist/tippy.css";
 
 const Container = styled("div")`
   display: flex;
@@ -77,7 +79,9 @@ export default class TreeNode extends Component<Props, State> {
     return (
       <Container>
         <LabelContainer hover={this.state.hover}>
-          {getNodeIcon(type)}
+          <Tooltip title={type} position="right">
+            {getNodeIcon(type)}
+          </Tooltip>
           <Label
             onMouseOver={this.handleHover}
             onMouseLeave={this.handleMouseOut}
