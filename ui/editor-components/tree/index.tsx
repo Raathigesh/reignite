@@ -20,19 +20,6 @@ interface Props {
   tree?: TreeViewStore;
 }
 
-function getNodeIcon(type: "emotion" | "primitive" | "component") {
-  switch (type) {
-    case "emotion":
-      return "highlight";
-    case "primitive":
-      return "build";
-    case "component":
-      return "appstore";
-    default:
-      return "appstore";
-  }
-}
-
 @inject("tree")
 @observer
 export default class Outline extends Component<Props> {

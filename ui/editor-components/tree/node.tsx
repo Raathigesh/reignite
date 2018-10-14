@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "react-emotion";
+import { Package, Edit3, Code } from "react-feather";
 
 const Container = styled("div")`
   display: flex;
@@ -11,11 +12,20 @@ const Container = styled("div")`
   cursor: pointer;
 `;
 
-const Label = styled("span")``;
+const LabelContainer = styled("div")`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const Label = styled("span")`
+  padding-left: 5px;
+`;
 
 interface Node {
   id: string;
   label: string;
+  type: string;
   children: Node[];
 }
 
@@ -24,18 +34,36 @@ interface Props {
   highlightComponent: (id: string) => void;
 }
 
+function getNodeIcon(type: "Native" | "Composite" | "Text" | "Wrapper") {
+  switch (type) {
+    case "Native":
+      return <Code size={12} />;
+    case "Composite":
+      return <Package size={12} />;
+    case "Text":
+      return <Edit3 size={12} />;
+    case "Wrapper":
+      return <Package size={12} />;
+    default:
+      return <Package size={12} />;
+  }
+}
+
 export default class TreeNode extends Component<Props> {
   render() {
-    const { label, children, id } = this.props.root;
+    const { label, children, id, type } = this.props.root;
     return (
       <Container>
-        <Label
-          onMouseOver={() => {
-            this.props.highlightComponent(id);
-          }}
-        >
-          {label}
-        </Label>
+        <LabelContainer>
+          {getNodeIcon(type)}
+          <Label
+            onMouseOver={() => {
+              this.props.highlightComponent(id);
+            }}
+          >
+            {label}
+          </Label>
+        </LabelContainer>
         {children.map(child => (
           <TreeNode
             root={child}

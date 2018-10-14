@@ -69,6 +69,7 @@ class Inspector {
     const nodeData = item.data;
     const node = {
       id: item.id,
+      type: nodeData.nodeType,
       name: nodeData.name,
       children: []
     } as any;
