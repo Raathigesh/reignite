@@ -24,14 +24,15 @@ export default class TreeViewStore {
     });
   }
 
-  highlightComponentInPreview(id: string) {
-    //this.selectedNode = id;
+  highlightComponentInPreview = (id: string) => {
+    this.selectedNode = id;
+    console.log("id", id);
     highlightComponent(id);
-    /*  const node = this.findNodeById(id);
+    const node = this.findNodeById(id);
     if (node) {
       this.setNodePath(node.path);
-    } */
-  }
+    }
+  };
 
   setNodePath(path: string) {
     console.log("📍 Current Path", path);

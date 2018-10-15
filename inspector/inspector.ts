@@ -12,11 +12,17 @@ class Inspector {
   public helpers: any;
 
   constructor() {
-    const overlay = new Overlay(window);
+    let overlay: any = null;
     window.addEventListener(
       "message",
       event => {
+        if (event.data.highlight === null && overlay) {
+          overlay.remove();
+          return;
+        }
+
         if (event.data.highlight) {
+          overlay = new Overlay(window);
           const internalInstance = this.instanceById.get(event.data.highlight);
           const domElement = this.helpers.getNativeFromReactElement(
             internalInstance
@@ -71,6 +77,8 @@ class Inspector {
       id: item.id,
       type: nodeData.nodeType,
       name: nodeData.name,
+      path: nodeData.type && nodeData.type.__reactstandin__key,
+      source: nodeData.source,
       children: []
     } as any;
     root.children.push(node);
@@ -86,7 +94,7 @@ class Inspector {
           this.getTree(child, node);
         });
     }
-
+    console.log(root);
     return root;
   };
 }

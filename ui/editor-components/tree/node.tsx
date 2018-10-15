@@ -72,6 +72,7 @@ export default class TreeNode extends Component<Props, State> {
     this.setState({
       hover: false
     });
+    this.props.highlightComponent(null);
   };
 
   render() {
