@@ -12,15 +12,16 @@ const HelloInnerDiv = styled("div")`
   border: 5px;
 `;
 const Bar = styled("button")`
-  background-color: #f5a623;
+  background-color: #ce8080;
 `;
 
 const App = function Home() {
   return (
     <HelloDiv>
-      <AdditionalComponent />
-      <HelloInnerDiv>Hey</HelloInnerDiv>
-      <Bar>Hello</Bar>
+      <HelloInnerDiv>
+        <Bar>Hello</Bar>
+        <AdditionalComponent />
+      </HelloInnerDiv>
     </HelloDiv>
   );
 };

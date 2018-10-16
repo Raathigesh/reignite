@@ -63,6 +63,16 @@ class Inspector {
     });
   }
 
+  getNodeType(nodeData: any) {
+    if (
+      typeof nodeData.type === "function" &&
+      nodeData.type.name === "StyledComponent"
+    ) {
+      return "StyledComponent";
+    }
+    return nodeData.nodeType;
+  }
+
   getTree = (
     internalInstance: any,
     root: any = {
@@ -75,7 +85,7 @@ class Inspector {
     const nodeData = item.data;
     const node = {
       id: item.id,
-      type: nodeData.nodeType,
+      type: this.getNodeType(nodeData),
       name: nodeData.name,
       path: nodeData.type && nodeData.type.__reactstandin__key,
       source: nodeData.source,

@@ -13,6 +13,7 @@ export default class TreeNode {
   public path: string;
   @observable
   public hasCaret: boolean;
+  public source: any;
   @observable
   public children: IObservableArray<TreeNode> = observable([]);
 
@@ -22,13 +23,15 @@ export default class TreeNode {
     label,
     path,
     hasCaret,
-    childNodes
+    childNodes,
+    source
   }: {
     id: string;
     type: NodeType;
     label: string;
     path: string;
     hasCaret: boolean;
+    source: any;
     childNodes: TreeNode[];
   }) {
     this.id = id;
@@ -36,6 +39,7 @@ export default class TreeNode {
     this.label = label;
     this.path = path;
     this.hasCaret = hasCaret;
+    this.source = source;
     this.children.push(...childNodes);
   }
 }

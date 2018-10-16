@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "react-emotion";
-import { Package, Edit3, Code } from "react-feather";
+import { Package, Edit3, Code, Aperture } from "react-feather";
 import { Tooltip } from "react-tippy";
 import "react-tippy/dist/tippy.css";
 
@@ -41,7 +41,9 @@ interface State {
   hover: boolean;
 }
 
-function getNodeIcon(type: "Native" | "Composite" | "Text" | "Wrapper") {
+function getNodeIcon(
+  type: "Native" | "Composite" | "Text" | "Wrapper" | "StyledComponent"
+) {
   switch (type) {
     case "Native":
       return <Code size={12} />;
@@ -51,6 +53,8 @@ function getNodeIcon(type: "Native" | "Composite" | "Text" | "Wrapper") {
       return <Edit3 size={12} />;
     case "Wrapper":
       return <Package size={12} />;
+    case "StyledComponent":
+      return <Aperture size={12} />;
     default:
       return <Package size={12} />;
   }

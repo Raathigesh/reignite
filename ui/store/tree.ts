@@ -26,23 +26,23 @@ export default class TreeViewStore {
 
   highlightComponentInPreview = (id: string) => {
     this.selectedNode = id;
-    console.log("id", id);
     highlightComponent(id);
     const node = this.findNodeById(id);
+
     if (node) {
-      this.setNodePath(node.path);
+      console.log(node.source);
+      this.setNodePath(node);
     }
   };
 
-  setNodePath(path: string) {
-    console.log("📍 Current Path", path);
-
-    if (!path) {
+  setNodePath(node: TreeNode) {
+    if (node.type === "StyledComponent") {
+      this.activeNodePath = node.source.fileName;
+      this.activeComponent = node.label;
+    } else {
       this.activeComponent = null;
       this.activeNodePath = null;
     }
-    this.activeNodePath = path.split("#")[0];
-    this.activeComponent = path.split("#")[1];
   }
 
   findNodeById(id: string, node: TreeNode = this.nodes[0]): TreeNode | null {
@@ -73,6 +73,7 @@ export default class TreeViewStore {
       path: reactTree.path,
       id: reactTree.id,
       hasCaret: reactTree.children.length > 0,
+      source: reactTree.source,
       childNodes: reactTree.children.map(node => this.mapToUIState(node))
     });
   }
