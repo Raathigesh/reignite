@@ -75,7 +75,7 @@ module.exports = env => ({
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: "Config Pack",
+      title: "Reignite",
       template: require("html-webpack-template"),
       appMountId: "root"
     }),

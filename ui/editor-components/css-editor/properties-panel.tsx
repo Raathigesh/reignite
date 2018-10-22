@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "react-emotion";
 import Property from "./property";
+import Border from "./border";
+import BorderRadius from "./border-radius";
+import Margin from "./margin";
 
 const Container = styled("div")``;
 
@@ -24,6 +27,9 @@ export default function PropertiesPanel({ properties, onChange }: Props) {
           onChange={onChange}
         />
       ))}
+      <Border />
+      <BorderRadius />
+      <Margin />
     </Container>
   );
 }
