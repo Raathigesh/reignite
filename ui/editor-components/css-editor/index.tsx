@@ -96,13 +96,6 @@ class CSSEditor extends Component<Props> {
             return (
               <Mutation mutation={UPDATE_CSS_PROPERTIES}>
                 {(updateCSSVariable, { data: updatedData, loading }) => {
-                  if (loading) {
-                    return (
-                      <Loading>
-                        <Icon type="loading" />
-                      </Loading>
-                    );
-                  }
                   return (
                     <div>
                       <PropertiesPanel

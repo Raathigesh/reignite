@@ -36,6 +36,11 @@ export function updateProperty(
 ) {
   const DeclarationWalker = postcss.plugin("reignite-style-parser", () => {
     return function(root, result) {
+      if (!hasRule(root, propertyName)) {
+        root.append(`${propertyName}:${propertyValue}`);
+        return;
+      }
+
       return root.walkDecls(rule => {
         if (rule.prop === propertyName) {
           rule.value = propertyValue;
@@ -45,4 +50,8 @@ export function updateProperty(
   });
 
   return processWithPlugin(cssString, DeclarationWalker);
+}
+
+function hasRule(root: any, ruleName: string) {
+  return root.some((rule: any) => rule.prop === ruleName);
 }

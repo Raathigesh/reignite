@@ -7,12 +7,13 @@ import Margin from "./margin";
 
 const Container = styled("div")``;
 
+interface Property {
+  name: string;
+  value: any;
+  type: string;
+}
 interface Props {
-  properties: {
-    name: string;
-    value: any;
-    type: string;
-  }[];
+  properties: Property[];
   onChange: (propertyName: string, value: string) => void;
 }
 
@@ -27,7 +28,15 @@ export default function PropertiesPanel({ properties, onChange }: Props) {
           onChange={onChange}
         />
       ))}
-      <Border />
+      <Border
+        onChange={onChange}
+        properties={properties
+          .filter(property => property.type === "border")
+          .reduce((previous, property) => {
+            previous[property.name] = property.value;
+            return previous;
+          }, {})}
+      />
       <BorderRadius />
       <Margin />
     </Container>

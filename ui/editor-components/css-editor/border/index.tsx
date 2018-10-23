@@ -6,10 +6,6 @@ import DarkButton from "../components/dark-button";
 import { Radio } from "antd";
 import { Flex } from "reflexbox";
 
-const Label = styled("div")`
-  color: white;
-`;
-
 const Container = styled("div")`
   display: flex;
   flex-direction: column;
@@ -44,21 +40,56 @@ const Dashed = styled("div")`
 interface BorderSide {
   color: string;
   width: number;
-  pattern: "dotted" | "dashed" | "solid";
+  style: "dotted" | "dashed" | "solid";
 }
 
+type CurrentSelection = "top" | "left" | "bottom" | "right";
+
 interface State {
-  currentSelection: "top" | "left" | "bottom" | "right";
+  currentSelection: CurrentSelection;
   top?: BorderSide;
   right?: BorderSide;
   bottom?: BorderSide;
   left?: BorderSide;
 }
 
-export default class Border extends Component<void, State> {
+interface Props {
+  properties: { [key: string]: string };
+  onChange: (property: string, value: string) => void;
+}
+
+export default class Border extends Component<Props, State> {
   state = {
-    currentSelection: "top"
+    currentSelection: "top" as CurrentSelection
   };
+
+  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    const properties = nextProps.properties;
+
+    return {
+      currentSelection: prevState.currentSelection,
+      top: {
+        color: properties["border-top-color"],
+        width: properties["border-top-width"],
+        style: properties["border-top-style"]
+      },
+      right: {
+        color: properties["border-right-color"],
+        width: properties["border-right-width"],
+        style: properties["border-right-style"]
+      },
+      bottom: {
+        color: properties["border-bottom-color"],
+        width: properties["border-bottom-width"],
+        style: properties["border-bottom-style"]
+      },
+      left: {
+        color: properties["border-left-color"],
+        width: properties["border-left-width"],
+        style: properties["border-left-style"]
+      }
+    };
+  }
 
   handleBorderSideSelection = e => {
     this.setState({
@@ -66,13 +97,18 @@ export default class Border extends Component<void, State> {
     });
   };
 
-  handleBorderValueChange = (property: string, value: any) => {
+  handleBorderValueChange = (property: any, value: any) => {
     this.setState({
-      [this.state.currentSelection]: {
-        [property]: value,
-        ...this.state[this.state.currentSelection]
+      [this.state.currentSelection as any]: {
+        ...this.state[this.state.currentSelection],
+        [property]: value
       }
     });
+
+    this.props.onChange(
+      `border-${this.state.currentSelection}-${property}`,
+      value
+    );
   };
 
   getCurrentBorderSide = () => {
@@ -116,7 +152,7 @@ export default class Border extends Component<void, State> {
                 size="small"
                 value={this.getCurrentBorderSide().width}
                 onChange={e => {
-                  this.handleBorderValueChange("width", e.target.value);
+                  this.handleBorderValueChange("width", `${e.target.value}px`);
                 }}
               />
             </Field>
@@ -126,9 +162,9 @@ export default class Border extends Component<void, State> {
             <Field>
               <Radio.Group
                 size="small"
-                value={this.getCurrentBorderSide().pattern}
+                value={this.getCurrentBorderSide().style}
                 onChange={e => {
-                  this.handleBorderValueChange("pattern", e.target.value);
+                  this.handleBorderValueChange("style", e.target.value);
                 }}
               >
                 <Radio.Button value="dotted">
