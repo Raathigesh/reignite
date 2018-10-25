@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import styled from "react-emotion";
-import { Package, Edit3, Code, Aperture } from "react-feather";
+import { Package, Edit3, Code, Aperture, Plus } from "react-feather";
 import { Tooltip } from "react-tippy";
 import "react-tippy/dist/tippy.css";
+import { Button, Tag } from "antd";
 
 const Container = styled("div")`
   display: flex;
@@ -16,6 +17,7 @@ const Container = styled("div")`
 
 const LabelContainer = styled("div")`
   display: flex;
+  height: 20px;
   flex-direction: row;
   align-items: center;
   color: ${props => (props.hover ? "wheat" : "white")};
@@ -23,6 +25,7 @@ const LabelContainer = styled("div")`
 
 const Label = styled("span")`
   padding-left: 5px;
+  margin-right: 5px;
 `;
 
 interface Node {
@@ -83,16 +86,20 @@ export default class TreeNode extends Component<Props, State> {
     const { label, children, type } = this.props.root;
     return (
       <Container>
-        <LabelContainer hover={this.state.hover}>
+        <LabelContainer
+          hover={this.state.hover}
+          onMouseOver={this.handleHover}
+          onMouseLeave={this.handleMouseOut}
+        >
           <Tooltip title={type} position="right">
             {getNodeIcon(type)}
           </Tooltip>
-          <Label
-            onMouseOver={this.handleHover}
-            onMouseLeave={this.handleMouseOut}
-          >
-            {label}
-          </Label>
+          <Label>{label}</Label>
+          {this.state.hover && (
+            <Tooltip title="Create child component" position="right">
+              <Tag>+</Tag>
+            </Tooltip>
+          )}
         </LabelContainer>
         {children.map(child => (
           <TreeNode
