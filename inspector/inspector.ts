@@ -24,6 +24,11 @@ class Inspector {
         if (event.data.highlight) {
           overlay = new Overlay(window);
           const internalInstance = this.instanceById.get(event.data.highlight);
+          console.log(
+            "Inspecting :",
+            internalInstance,
+            internalInstance._debugSource
+          );
           const domElement = this.helpers.getNativeFromReactElement(
             internalInstance
           );
@@ -45,7 +50,6 @@ class Inspector {
         data
       });
       this.instanceById.set(id, internalInstance);
-      console.log(data);
     });
 
     hook.sub("root", ({ renderer, internalInstance }: any) => {
@@ -58,8 +62,6 @@ class Inspector {
         },
         "http://localhost:9000"
       );
-
-      console.log(tree);
     });
   }
 
@@ -104,7 +106,7 @@ class Inspector {
           this.getTree(child, node);
         });
     }
-    console.log(root);
+
     return root;
   };
 }

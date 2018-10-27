@@ -1,6 +1,7 @@
 import { onComponentTree, highlightComponent } from "../post-message";
 import TreeNode from "./tree-node";
 import { observable, IObservableArray } from "mobx";
+import { filter } from "graphql-anywhere";
 
 export default class TreeViewStore {
   @observable
@@ -30,7 +31,6 @@ export default class TreeViewStore {
     const node = this.findNodeById(id);
 
     if (node) {
-      console.log(node.source);
       this.setNodePath(node);
     }
   };
@@ -69,12 +69,26 @@ export default class TreeViewStore {
   private mapToUIState(reactTree: any) {
     return new TreeNode({
       type: reactTree.type,
-      label: reactTree.name,
+      label: (reactTree.source && reactTree.source.tagName) || reactTree.name,
       path: reactTree.path,
       id: reactTree.id,
       hasCaret: reactTree.children.length > 0,
       source: reactTree.source,
-      childNodes: reactTree.children.map(node => this.mapToUIState(node))
+      childNodes: this.filterChildren(reactTree.children).map(node =>
+        this.mapToUIState(node)
+      )
     });
+  }
+
+  private filterChildren(children: any[]) {
+    const results: any[] = [];
+    children.forEach(child => {
+      if (!child.source) {
+        results.push(...this.filterChildren(child.children));
+      } else {
+        results.push(child);
+      }
+    });
+    return results;
   }
 }

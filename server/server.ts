@@ -37,7 +37,8 @@ export class Compiler {
               presets: ["@babel/preset-react", "@babel/preset-env"],
               plugins: [
                 "react-hot-loader/babel",
-                "@babel/plugin-transform-react-jsx-source",
+                path.join(__dirname, "./babel-plugins/source-plugin.js"),
+                //"@babel/plugin-transform-react-jsx-source",
                 [
                   "babel-plugin-styled-components",
                   {
